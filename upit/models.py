@@ -8,7 +8,6 @@ from fastai2.vision.all import *
 from fastai2.basics import *
 from typing import List
 from fastai2.vision.gan import *
-from .models_junyanz import define_G
 
 # Cell
 def convT_norm_relu(ch_in:int, ch_out:int, norm_layer:nn.Module, ks:int=3, stride:int=2, bias:bool=True):
