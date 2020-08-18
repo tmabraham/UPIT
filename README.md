@@ -6,7 +6,9 @@ TO BE UPDATED
 
 ## Install
 
-`pip install unpaired-img2img-translation`
+In the future, you will be able to install this package like so:
+
+`pip install upit`
 
 ## How to use
 
