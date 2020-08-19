@@ -28,8 +28,8 @@ index = {"convT_norm_relu": "01_models_cyclegan.ipynb",
 modules = ["models.py",
            "models_junyanz.py"]
 
-doc_url = "https://tmabraham.github.io/UPIT/"
+doc_url = "https://tmabraham.github.io/UPIT"
 
-git_url = "https://github.com/tmabraham/unpaired-img2img-translation/tree/master/"
+git_url = "https://github.com/tmabraham/UPIT/tree/master/"
 
 def custom_doc_links(name): return None
