@@ -1,7 +1,10 @@
 {
   "upit": {
     "Overview": "/",
-    "`01_models_cyclegan.ipynb`": "/models_cyclegan",
-    "`01b_models_junyanz.ipynb`": "/models_junyanz"
+    "`01_models.cyclegan.ipynb`": "/models.cyclegan",
+    "`01b_models.junyanz.ipynb`": "/models.junyanz",
+    "`02_data.unpaired.ipynb`": "/data.unpaired",
+    "`02_train.cyclegan.ipynb`": "/train.cyclegan",
+    "`03_inference.cyclegan.ipynb`": "/inference.cyclegan"
   }
 }

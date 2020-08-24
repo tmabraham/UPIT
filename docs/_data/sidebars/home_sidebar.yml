@@ -10,11 +10,20 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: '`01_models_cyclegan.ipynb`'
-      url: /models_cyclegan
+      title: '`01_models.cyclegan.ipynb`'
+      url: /models.cyclegan
     - output: web,pdf
-      title: '`01b_models_junyanz.ipynb`'
-      url: /models_junyanz
+      title: '`01b_models.junyanz.ipynb`'
+      url: /models.junyanz
+    - output: web,pdf
+      title: '`02_data.unpaired.ipynb`'
+      url: /data.unpaired
+    - output: web,pdf
+      title: '`02_train.cyclegan.ipynb`'
+      url: /train.cyclegan
+    - output: web,pdf
+      title: '`03_inference.cyclegan.ipynb`'
+      url: /inference.cyclegan
     output: web
     title: upit
   output: web
