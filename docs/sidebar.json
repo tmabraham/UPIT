@@ -1,23 +1,17 @@
 {
+  "upit": {
     "Overview": "/",
-    "":{
-      "Models": {
-          "CycleGAN": "/models.cyclegan"
-      }
+    "Models": {
+      "CycleGAN": "/models.cyclegan"
     },
-    "empty1":{
-      "Data loading":{
-        "Unpaired data loading": "/data.unpaired"
-      }
+    "Data loading":{
+      "Unpaired data loading": "/data.unpaired"
     },
-    "empty2":{
-      "Training loop":{
-          "CycleGAN": "/train.cyclegan"
-      }
+    "Training loop":{
+      "CycleGAN": "/train.cyclegan"
     },
-    "empty3":{
-      "Batch inference":{
-        "CycleGAN": "/inference.cyclegan"
-      }
+    "Batch inference":{
+    "CycleGAN": "/inference.cyclegan"
     }
+  }
 }
