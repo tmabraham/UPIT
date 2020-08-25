@@ -1,17 +1,23 @@
 {
-  "Getting started": {
-    "Overview": "/"
-  },
-  "Models": {
-    "CycleGAN": "/models.cyclegan"
-  },
-  "Data loading":{
-    "Unpaired data loading": "/data.unpaired"
-  },
-  "Training loop":{
-    "CycleGAN": "/train.cyclegan"
-  },
-  "Batch inference":{
-    "CycleGAN": "/inference.cyclegan"
-  }
+    "Overview": "/",
+    "":{
+      "Models": {
+          "CycleGAN": "/models.cyclegan"
+      }
+    },
+    "empty1":{
+      "Data loading":{
+        "Unpaired data loading": "/data.unpaired"
+      }
+    },
+    "empty2":{
+      "Training loop":{
+          "CycleGAN": "/train.cyclegan"
+      }
+    },
+    "empty3":{
+      "Batch inference":{
+        "CycleGAN": "/inference.cyclegan"
+      }
+    }
 }
