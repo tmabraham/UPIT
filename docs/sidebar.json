@@ -1,7 +1,7 @@
 {
-    "Getting Started": {
-        "Overview":"/"
-    },
+  "UPIT":{
+
+    "Overview":"/",
     "Models":{
         "CycleGAN":"/models.cyclegan"
     },
@@ -12,6 +12,7 @@
       "CycleGAN": "/train.cyclegan"
     },
     "Batch inference":{
-      "CycleGAN": "inference.cyclegan"
+      "CycleGAN": "/inference.cyclegan"
     }
+  }
 }

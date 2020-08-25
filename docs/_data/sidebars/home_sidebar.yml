@@ -9,31 +9,31 @@ entries:
     - output: web,pdf
       title: Overview
       url: /
+    - output: web
+      subfolders:
+      - output: web,pdf
+        title: CycleGAN
+        url: /models.cyclegan
+      title: Models
+    - output: web
+      subfolders:
+      - output: web,pdf
+        title: Unpaired data loading
+        url: /data.unpaired
+      title: Data loading
+    - output: web
+      subfolders:
+      - output: web,pdf
+        title: CycleGAN
+        url: /train.cyclegan
+      title: Training loop
+    - output: web
+      subfolders:
+      - output: web,pdf
+        title: CycleGAN
+        url: /inference.cyclegan
+      title: Batch inference
     output: web
-    title: Getting Started
-  - folderitems:
-    - output: web,pdf
-      title: CycleGAN
-      url: /models.cyclegan
-    output: web
-    title: Models
-  - folderitems:
-    - output: web,pdf
-      title: Unpaired data loading
-      url: /data.unpaired
-    output: web
-    title: Data loading
-  - folderitems:
-    - output: web,pdf
-      title: CycleGAN
-      url: /train.cyclegan
-    output: web
-    title: Training loop
-  - folderitems:
-    - output: web,pdf
-      title: CycleGAN
-      url: inference.cyclegan
-    output: web
-    title: Batch inference
+    title: UPIT
   output: web
   title: Sidebar
