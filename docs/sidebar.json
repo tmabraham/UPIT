@@ -1,6 +1,4 @@
 {
-  "UPIT":{
-
     "Overview":"/",
     "Models":{
         "CycleGAN":"/models.cyclegan"
@@ -14,5 +12,4 @@
     "Batch inference":{
       "CycleGAN": "/inference.cyclegan"
     }
-  }
 }
