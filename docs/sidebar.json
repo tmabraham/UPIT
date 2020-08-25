@@ -1,10 +1,17 @@
 {
   "upit": {
     "Overview": "/",
-    "CycleGAN model": "/models.cyclegan",
-    "Original CycleGAN implementation": "/models.junyanz",
-    "`02_data.unpaired.ipynb`": "/data.unpaired",
-    "`03_train.cyclegan.ipynb`": "/train.cyclegan",
-    "`04_inference.cyclegan.ipynb`": "/inference.cyclegan"
+    "Models": {
+      "CycleGAN": "/models.cyclegan"
+    },
+    "Data loading":{
+      "Unpaired data loading": "/data.unpaired"
+    },
+    "Training loop":{
+      "CycleGAN": "/train.cyclegan"
+    },
+    "Batch inference":{
+    "CycleGAN": "/inference.cyclegan"
+    }
   }
 }
