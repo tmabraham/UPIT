@@ -5,10 +5,10 @@
 # Instead edit ../../sidebar.json
 entries:
 - folders:
+  - output: web,pdf
+    title: Overview
+    url: /
   - folderitems:
-    - output: web,pdf
-      title: Overview
-      url: /
     - output: web
       subfolders:
       - output: web,pdf
@@ -33,7 +33,5 @@ entries:
         title: CycleGAN
         url: /inference.cyclegan
       title: Batch inference
-    output: web
-    title: upit
   output: web
   title: Sidebar
