@@ -5,8 +5,8 @@ title: CycleGAN training loop
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "Defines the loss and training loop functions/classes for CycleGAN."
+description: "Defines the loss and training loop functions/classes for CycleGAN."
 ---
 <!--
 
@@ -96,15 +96,91 @@ The main loss used to train the generators. It has three parts:</p>
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="CycleGANLoss.__init__" class="doc_header"><code>CycleGANLoss.__init__</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/train/cyclegan.py#L52" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>CycleGANLoss.__init__</code>(<strong><code>cgan</code></strong>:<code>Module</code>, <strong><code>l_A</code></strong>:<code>float</code>=<em><code>10.0</code></em>, <strong><code>l_B</code></strong>:<code>float</code>=<em><code>10</code></em>, <strong><code>l_idt</code></strong>:<code>float</code>=<em><code>0.5</code></em>, <strong><code>lsgan</code></strong>:<code>bool</code>=<em><code>True</code></em>)</p>
+</blockquote>
+<p>Constructor for CycleGAN loss.</p>
+<p>Arguments:</p>
+<p><code>cgan</code> (<code>nn.Module</code>): The CycleGAN model.</p>
+<p><code>l_A</code> (<code>float</code>): weight of domain A losses. (default=10)</p>
+<p><code>l_B</code> (<code>float</code>): weight of domain B losses. (default=10)</p>
+<p><code>l_idt</code> (<code>float</code>): weight of identity losses. (default=0.5)</p>
+<p><code>lsgan</code> (<code>bool</code>): Whether or not to use LSGAN objective. (default=True)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="CycleGANLoss.set_input" class="doc_header"><code>CycleGANLoss.set_input</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/train/cyclegan.py#L72" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>CycleGANLoss.set_input</code>(<strong><code>input</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="CycleGANLoss.forward" class="doc_header"><code>CycleGANLoss.forward</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/train/cyclegan.py#L74" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>CycleGANLoss.forward</code>(<strong><code>output</code></strong>, <strong><code>target</code></strong>, <strong><code>discriminator</code></strong>=<em><code>False</code></em>)</p>
+</blockquote>
+<p>Forward function of the CycleGAN loss function. The generated images are passed in as output (which comes from the model)
+and the generator loss is returned. If <a href="/UPITmodels.cyclegan#discriminator"><code>discriminator</code></a> is set to True, the discriminator adversarial loss will be calculated
+and returned instead.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Training-loop-callback:">Training loop callback:<a class="anchor-link" href="#Training-loop-callback:"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's now write the main callback to train a CycleGAN model.</p>
+<h2 id="Training-loop-callback">Training loop callback<a class="anchor-link" href="#Training-loop-callback"> </a></h2><p>Let's now write the main callback to train a CycleGAN model.</p>
 <p>Fastai's callback system is very flexible, allowing us to adjust the traditional training loop in any conceivable way possible. Let's use it for GAN training.</p>
 <p>We have the <code>_set_trainable</code> function that is called with arguments telling which networks need to be put in training mode or which need to be frozen.</p>
 <p>When we start training <code>before_train</code>, we define separate optimizers. <code>self.opt_G</code> for the generators and <code>self.opt_D</code> for the discriminators. Then we put the generators in training mode (with <code>_set_trainable</code>).</p>
@@ -135,6 +211,31 @@ The main loss used to train the generators. It has three parts:</p>
 <h2 id="CycleGANTrainer" class="doc_header"><code>class</code> <code>CycleGANTrainer</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/train/cyclegan.py#L100" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CycleGANTrainer</code>(<strong><code>before_fit</code></strong>=<em><code>None</code></em>, <strong><code>before_epoch</code></strong>=<em><code>None</code></em>, <strong><code>before_train</code></strong>=<em><code>None</code></em>, <strong><code>before_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_pred</code></strong>=<em><code>None</code></em>, <strong><code>after_loss</code></strong>=<em><code>None</code></em>, <strong><code>before_backward</code></strong>=<em><code>None</code></em>, <strong><code>after_backward</code></strong>=<em><code>None</code></em>, <strong><code>after_step</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_batch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_train</code></strong>=<em><code>None</code></em>, <strong><code>after_train</code></strong>=<em><code>None</code></em>, <strong><code>before_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_validate</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_epoch</code></strong>=<em><code>None</code></em>, <strong><code>after_cancel_fit</code></strong>=<em><code>None</code></em>, <strong><code>after_fit</code></strong>=<em><code>None</code></em>) :: <code>Callback</code></p>
 </blockquote>
 <p>Basic class handling tweaks of the training loop by changing a <code>Learner</code> in various events</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="CycleGANTrainer._set_trainable" class="doc_header"><code>CycleGANTrainer._set_trainable</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/train/cyclegan.py#L103" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>CycleGANTrainer._set_trainable</code>(<strong><code>disc</code></strong>=<em><code>False</code></em>)</p>
+</blockquote>
+<p>Put the generators or discriminators in training mode depending on arguments.</p>
 
 </div>
 
@@ -270,6 +371,13 @@ The main loss used to train the generators. It has three parts:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="CycleGAN-Learner-construction">CycleGAN Learner construction<a class="anchor-link" href="#CycleGAN-Learner-construction"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below, we now define a method for initializing a <code>Learner</code> with the CycleGAN model and training callback.</p>
+
 </div>
 </div>
 </div>
@@ -564,12 +672,6 @@ The main loss used to train the generators. It has three parts:</p>
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Export">Export<a class="anchor-link" href="#Export"> </a></h2>
-</div>
-</div>
-</div>
 </div>
  
 

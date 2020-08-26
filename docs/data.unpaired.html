@@ -5,8 +5,8 @@ title: Unpaired data loading
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "Loading of the dataset into the fastai `DataLoaders` class."
+description: "Loading of the dataset into the fastai `DataLoaders` class."
 ---
 <!--
 
@@ -36,7 +36,7 @@ sidebar: home_sidebar
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Download-Dataset---Horse-to-Zebra-conversion">Download Dataset - Horse to Zebra conversion<a class="anchor-link" href="#Download-Dataset---Horse-to-Zebra-conversion"> </a></h2><p>Here, we are going to use the <code>horse2zebra</code> dataset provided by UC Berkeley. Let's download it with the fastai <code>untar_data</code> function. Additionally, we can view the directory with <code>Path.ls()</code> (added by fastai).</p>
+<h2 id="Example-Dataset---Horse-to-Zebra-conversion">Example Dataset - Horse to Zebra conversion<a class="anchor-link" href="#Example-Dataset---Horse-to-Zebra-conversion"> </a></h2><p>Here, we are going to use the <code>horse2zebra</code> dataset provided by UC Berkeley. Let's download it with the fastai <code>untar_data</code> function. Additionally, we can view the directory with <code>Path.ls()</code> (added by fastai).</p>
 
 </div>
 </div>
@@ -219,7 +219,7 @@ So for transforms we will have a list of list of transforms. Each list of transf
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="RandPair" class="doc_header"><code>class</code> <code>RandPair</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/data/unpaired.py#L12" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>RandPair</code>(<strong><code>itemsB</code></strong>) :: <code>Transform</code></p>
+<h3 id="RandPair" class="doc_header"><code>class</code> <code>RandPair</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/data/unpaired.py#L12" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>RandPair</code>(<strong><code>itemsB</code></strong>) :: <code>Transform</code></p>
 </blockquote>
 <p>Delegates (<code>__call__</code>,<code>decode</code>,<code>setup</code>) to (<code>encodes</code>,<code>decodes</code>,<code>setups</code>) if <code>split_idx</code> matches</p>
 

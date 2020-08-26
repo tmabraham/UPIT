@@ -5,8 +5,8 @@ title: CycleGAN model
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "Defines the CycleGAN model architecture."
+description: "Defines the CycleGAN model architecture."
 ---
 <!--
 
@@ -34,12 +34,6 @@ sidebar: home_sidebar
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Models">Models<a class="anchor-link" href="#Models"> </a></h1>
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>We use the models that were introduced in the <a href="https://arxiv.org/abs/1703.10593">cycleGAN paper</a>.</p>
@@ -636,6 +630,65 @@ Also outputs identity images after passing the images into generators that outpu
 <p><code>G_B</code> (<code>nn.Module</code>): takes real input A and generates fake input B</p>
 <p><code>D_A</code> (<code>nn.Module</code>): trained to make the difference between real input A and fake input A</p>
 <p><code>D_B</code> (<code>nn.Module</code>): trained to make the difference between real input B and fake input B</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="CycleGAN.__init__" class="doc_header"><code>CycleGAN.__init__</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/cyclegan.py#L121" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>CycleGAN.__init__</code>(<strong><code>ch_in</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>ch_out</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_features</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>disc_layers</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>gen_blocks</code></strong>:<code>int</code>=<em><code>9</code></em>, <strong><code>lsgan</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>drop</code></strong>:<code>float</code>=<em><code>0.0</code></em>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>)</p>
+</blockquote>
+<p>Constructor for CycleGAN model.</p>
+<p>Arguments:</p>
+<p><code>ch_in</code> (<code>int</code>): Number of input channels (default=3)</p>
+<p><code>ch_out</code> (<code>int</code>): Number of output channels (default=3)</p>
+<p><code>n_features</code> (<code>int</code>): Number of input features (default=64)</p>
+<p><code>disc_layers</code> (<code>int</code>): Number of discriminator layers (default=3)</p>
+<p><code>gen_blocks</code> (<code>int</code>): Number of residual blocks in the generator (default=9)</p>
+<p><code>lsgan</code> (<code>bool</code>): LSGAN training objective (output unnormalized float) or not? (default=True)</p>
+<p><code>drop</code> (<code>float</code>): Level of dropout (default=0)</p>
+<p><code>norm_layer</code> (<code>nn.Module</code>): Type of normalization layer to use in the models (default=None)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="CycleGAN.forward" class="doc_header"><code>CycleGAN.forward</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/cyclegan.py#L156" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>CycleGAN.forward</code>(<strong><code>input</code></strong>)</p>
+</blockquote>
+<p>Forward function for CycleGAN model. The input is a tuple of a batch of real images from both domains A and B.</p>
 
 </div>
 
