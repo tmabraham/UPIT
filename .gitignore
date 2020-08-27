@@ -1,5 +1,7 @@
 # UPIT-specific
 *.tif
+*.pth
+
 
 *.bak
 .gitattributes
