@@ -96,26 +96,29 @@ can be provided.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span><span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
-    <span class="s2">&quot;A helper function for getting a DataLoader for images in the folder `test_path`, with batch size `bs`, and number of workers `num_workers`&quot;</span>
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">FolderDataset</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">test_path</span><span class="p">,</span>
-            <span class="n">transforms</span><span class="o">=</span><span class="p">[</span><span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))]</span>
-        <span class="p">)</span> 
-    <span class="n">loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
-            <span class="n">dataset</span><span class="p">,</span>
-            <span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span>
-            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
-            <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">loader</span>
-</pre></div>
+</div>
+    {% endraw %}
 
-    </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h3 id="load_dataset" class="doc_header"><code>load_dataset</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L48" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>load_dataset</code>(<strong><code>test_path</code></strong>, <strong><code>bs</code></strong>=<em><code>4</code></em>, <strong><code>num_workers</code></strong>=<em><code>4</code></em>)</p>
+</blockquote>
+<p>A helper function for getting a DataLoader for images in the folder <code>test_path</code>, with batch size <code>bs</code>, and number of workers <code>num_workers</code></p>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -140,7 +143,7 @@ can be provided.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="get_preds_cyclegan" class="doc_header"><code>get_preds_cyclegan</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L48" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>get_preds_cyclegan</code>(<strong><code>learn</code></strong>, <strong><code>test_path</code></strong>, <strong><code>pred_path</code></strong>, <strong><code>bs</code></strong>=<em><code>4</code></em>, <strong><code>num_workers</code></strong>=<em><code>4</code></em>, <strong><code>suffix</code></strong>=<em><code>'tif'</code></em>)</p>
+<h3 id="get_preds_cyclegan" class="doc_header"><code>get_preds_cyclegan</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L63" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>get_preds_cyclegan</code>(<strong><code>learn</code></strong>, <strong><code>test_path</code></strong>, <strong><code>pred_path</code></strong>, <strong><code>bs</code></strong>=<em><code>4</code></em>, <strong><code>num_workers</code></strong>=<em><code>4</code></em>, <strong><code>suffix</code></strong>=<em><code>'tif'</code></em>)</p>
 </blockquote>
 <p>A prediction function that takes the Learner object <code>learn</code> with the trained model, the <code>test_path</code> folder with the images to perform
 batch inference on, and the output folder <code>pred_path</code> where the predictions will be saved, with a batch size <code>bs</code>, <code>num_workers</code>,
@@ -251,7 +254,7 @@ and suffix of the prediction images <code>suffix</code> (default='png').</p>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 30/30 [00:01&lt;00:00, 16.69it/s]
+<pre>100%|██████████| 30/30 [00:01&lt;00:00, 16.70it/s]
 </pre>
 </div>
 </div>
