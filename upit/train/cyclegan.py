@@ -100,6 +100,7 @@ class CycleGANTrainer(Callback):
         if disc: self.opt_D.hypers = self.learn.opt.hypers
 
     def before_train(self, **kwargs):
+        #Setup and define optimizers for generator and discriminator
         self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
         self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
         self.crit = self.learn.loss_func.crit
@@ -107,28 +108,29 @@ class CycleGANTrainer(Callback):
             self.opt_G = self.learn.opt_func(self.learn.splitter(nn.Sequential(*flatten_model(self.G_A), *flatten_model(self.G_B))), self.learn.lr)
         else:
             self.opt_G.hypers = self.learn.opt.hypers
-        if not getattr(self, 'opt_D',None):
+        if not getattr(self,'opt_D',None):
             self.opt_D = self.learn.opt_func(self.learn.splitter(nn.Sequential(*flatten_model(self.D_A), *flatten_model(self.D_B))), self.learn.lr)
-        else:
-            self.opt_D.hypers = self.learn.opt.hypers
 
         self.learn.opt = self.opt_G
         self._set_trainable()
 
     def before_batch(self, **kwargs):
+        #Reorganize the input batch
         self._training = self.learn.model.training
         self.learn.xb = (self.learn.xb[0],self.learn.yb[0]),
         self.learn.loss_func.set_input(*self.learn.xb)
 
-    def after_step(self):
-        self.opt_D.hypers = self.learn.opt.hypers
+    def after_step(self): self.opt_D.hypers = self.learn.opt.hypers
 
     def after_batch(self, **kwargs):
+        # Discriminator training loop
         self.G_A.zero_grad(); self.G_B.zero_grad()
+        fake_A, fake_B = self.learn.pred[0].detach(), self.learn.pred[1].detach()
+        (real_A, real_B), = self.learn.xb
         if self._training:
-            self._set_trainable(disc=True)
+            self._set_trainable(True)
             self.D_A.zero_grad(); self.D_B.zero_grad()
-            loss_D_A, loss_D_B = self.learn.loss_func(self.learn.xb[0], (self.learn.pred[0].detach(), self.learn.pred[1].detach()), discriminator=True)
+            loss_D_A, loss_D_B = self.learn.loss_func((fake_A,fake_B),(real_A,real_B),discriminator=True)
             loss_D_A.backward()
             loss_D_B.backward()
             self.opt_D.step()
