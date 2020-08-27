@@ -32,7 +32,7 @@ entries:
   - folderitems:
     - output: web,pdf
       title: CycleGAN
-      url: inference.cyclegan
+      url: /inference.cyclegan
     output: web
     title: Batch inference
   output: web

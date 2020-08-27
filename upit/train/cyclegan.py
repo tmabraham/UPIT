@@ -15,26 +15,16 @@ class CycleGANLoss(nn.Module):
     """
     CycleGAN loss function. The individual loss terms are also atrributes of this class that are accessed by fastai for recording during training.
 
-    Attributes:
-
-    `self.cgan` (`nn.Module`): The CycleGAN model.
-
-    `self.l_A` (`float`): lambda_A, weight of domain A losses.
-
-    `self.l_B` (`float`): lambda_B, weight of domain B losses.
-
-    `self.l_idt` (`float`): lambda_idt, weight of identity lossees.
-
-    `self.crit` (`AdaptiveLoss`): The adversarial loss function (either a BCE or MSE loss depending on `lsgan` argument)
-
-    `self.real_A` and `self.real_B` (`fastai.torch_core.TensorImage`): Real images from domain A and B.
-
-    `self.id_loss_A` (`torch.FloatTensor`): The identity loss for domain A calculated in the forward function
-
-    `self.id_loss_B` (`torch.FloatTensor`): The identity loss for domain B calculated in the forward function
-
-    `self.gen_loss` (`torch.FloatTensor`): The generator loss calculated in the forward function
-
+    Attributes: \n
+    `self.cgan` (`nn.Module`): The CycleGAN model. \n
+    `self.l_A` (`float`): lambda_A, weight of domain A losses. \n
+    `self.l_B` (`float`): lambda_B, weight of domain B losses. \n
+    `self.l_idt` (`float`): lambda_idt, weight of identity lossees. \n
+    `self.crit` (`AdaptiveLoss`): The adversarial loss function (either a BCE or MSE loss depending on `lsgan` argument) \n
+    `self.real_A` and `self.real_B` (`fastai.torch_core.TensorImage`): Real images from domain A and B. \n
+    `self.id_loss_A` (`torch.FloatTensor`): The identity loss for domain A calculated in the forward function \n
+    `self.id_loss_B` (`torch.FloatTensor`): The identity loss for domain B calculated in the forward function \n
+    `self.gen_loss` (`torch.FloatTensor`): The generator loss calculated in the forward function \n
     `self.cyc_loss` (`torch.FloatTensor`): The cyclic loss calculated in the forward function
     """
 
@@ -55,21 +45,17 @@ class CycleGANLoss(nn.Module):
 
         Arguments:
 
-        `cgan` (`nn.Module`): The CycleGAN model.
-
-        `l_A` (`float`): weight of domain A losses. (default=10)
-
-        `l_B` (`float`): weight of domain B losses. (default=10)
-
-        `l_idt` (`float`): weight of identity losses. (default=0.5)
-
+        `cgan` (`nn.Module`): The CycleGAN model. \n
+        `l_A` (`float`): weight of domain A losses. (default=10) \n
+        `l_B` (`float`): weight of domain B losses. (default=10) \n
+        `l_idt` (`float`): weight of identity losses. (default=0.5) \n
         `lsgan` (`bool`): Whether or not to use LSGAN objective. (default=True)
         """
         super().__init__()
         store_attr(self,'cgan,l_A,l_B,l_idt,lsgan')
         self.crit = self._create_gan_loss(F.mse_loss if self.lsgan else F.binary_cross_entropy)
 
-    def set_input(self, input): self.real_A,self.real_B = input
+    def set_input(self, input): "set `self.real_A` and `self.real_B` for future loss calculation"; self.real_A,self.real_B = input
 
     def forward(self, output, target, discriminator=False):
         """
@@ -98,7 +84,10 @@ class CycleGANLoss(nn.Module):
 
 # Cell
 class CycleGANTrainer(Callback):
+    """`Learner` Callback for training a CycleGAN model."""
     run_before = Recorder
+
+    def __init__(self): pass
 
     def _set_trainable(self, disc=False):
         """Put the generators or discriminators in training mode depending on arguments."""
@@ -206,7 +195,11 @@ def fit_flat_lin(self:Learner, n_epochs:int=100, n_epochs_decay:int=100, start_l
 
 # Cell
 @delegates(Learner.__init__)
-def cycle_learner(dls, m, opt_func=Adam, metrics=[], cbs=[], **kwargs):
+def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, metrics:list=[], cbs:list=[], **kwargs):
+    """
+    Initialize and return a `Learner` object with the data in `dls`, CycleGAN model `m`, optimizer function `opt_func`, metrics `metrics`,
+    and callbacks `cbs`. Other `Learner` arguments can be passed as well.
+    """
     lms = LossMetrics(['id_loss_A', 'id_loss_B','gen_loss_A','gen_loss_B','cyc_loss_A','cyc_loss_B',
                        'D_A_loss', 'D_B_loss'])
 

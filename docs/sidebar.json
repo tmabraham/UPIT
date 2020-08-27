@@ -13,6 +13,6 @@
       "CycleGAN": "/train.cyclegan"
     },
     "Batch inference":{
-      "CycleGAN": "inference.cyclegan"
+      "CycleGAN": "/inference.cyclegan"
     }
 }

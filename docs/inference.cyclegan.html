@@ -5,8 +5,8 @@ title: CycleGAN batch inference
 keywords: fastai
 sidebar: home_sidebar
 
-
-
+summary: "Provides batch inference functionality for the CycleGAN model."
+description: "Provides batch inference functionality for the CycleGAN model."
 ---
 <!--
 
@@ -40,6 +40,15 @@ sidebar: home_sidebar
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If we are given a test set as a folder, we can use the <a href="/UPITinference.cyclegan#get_preds_cyclegan"><code>get_preds_cyclegan</code></a> function defined below to perform batch inference on the images in the folder and save the predictions.</p>
+<p>I found it easier to write my own inference functionality for the custom CycleGAN model than fastai's built-in functionality.</p>
+<p>I define a PyTorch Dataset that can be used for inference just by passing in the folder with the image files for inference:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -58,19 +67,14 @@ sidebar: home_sidebar
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="FolderDataset" class="doc_header"><code>class</code> <code>FolderDataset</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L17" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>FolderDataset</code>(<strong><code>path</code></strong>, <strong><code>transforms</code></strong>=<em><code>None</code></em>) :: <code>Dataset</code></p>
+<h3 id="FolderDataset" class="doc_header"><code>class</code> <code>FolderDataset</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L19" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>FolderDataset</code>(<strong><code>path</code></strong>, <strong><code>transforms</code></strong>=<em><code>None</code></em>) :: <code>Dataset</code></p>
 </blockquote>
-<p>An abstract class representing a :class:<code>Dataset</code>.</p>
-<p>All datasets that represent a map from keys to data samples should subclass
-it. All subclasses should overwrite :meth:<code>__getitem__</code>, supporting fetching a
-data sample for a given key. Subclasses could also optionally overwrite
-:meth:<code>__len__</code>, which is expected to return the size of the dataset by many
-:class:<code>~torch.utils.data.Sampler</code> implementations and the default options
-of :class:<code>~torch.utils.data.DataLoader</code>.</p>
-<p>.. note::
-  :class:<code>~torch.utils.data.DataLoader</code> by default constructs a index
-  sampler that yields integral indices.  To make it work with a map-style
-  dataset with non-integral indices/keys, a custom sampler must be provided.</p>
+<p>A PyTorch Dataset class that can be created from a folder <code>path</code> of images, for the sole purpose of inference. Optional <code>transforms</code>
+can be provided.</p>
+<p>Attributes:</p>
+<p><code>self.files</code>: A list of the filenames in the folder.</p>
+<p><code>self.totensor</code>: <code>torchvision.transforms.ToTensor</code> transform.</p>
+<p><code>self.transform</code>: The transforms passed in as <code>transforms</code> to the constructor.</p>
 
 </div>
 
@@ -78,6 +82,49 @@ of :class:<code>~torch.utils.data.DataLoader</code>.</p>
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's create a helper function for making the DataLoader:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span><span class="n">bs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="s2">&quot;A helper function for getting a DataLoader for images in the folder `test_path`, with batch size `bs`, and number of workers `num_workers`&quot;</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">FolderDataset</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">test_path</span><span class="p">,</span>
+            <span class="n">transforms</span><span class="o">=</span><span class="p">[</span><span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))]</span>
+        <span class="p">)</span> 
+    <span class="n">loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+            <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">loader</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -93,8 +140,11 @@ of :class:<code>~torch.utils.data.DataLoader</code>.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="load_dataset" class="doc_header"><code>load_dataset</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L36" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_dataset</code>(<strong><code>test_path</code></strong>, <strong><code>bs</code></strong>=<em><code>4</code></em>, <strong><code>num_workers</code></strong>=<em><code>4</code></em>)</p>
+<h3 id="get_preds_cyclegan" class="doc_header"><code>get_preds_cyclegan</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L48" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>get_preds_cyclegan</code>(<strong><code>learn</code></strong>, <strong><code>test_path</code></strong>, <strong><code>pred_path</code></strong>, <strong><code>bs</code></strong>=<em><code>4</code></em>, <strong><code>num_workers</code></strong>=<em><code>4</code></em>, <strong><code>suffix</code></strong>=<em><code>'tif'</code></em>)</p>
 </blockquote>
+<p>A prediction function that takes the Learner object <code>learn</code> with the trained model, the <code>test_path</code> folder with the images to perform
+batch inference on, and the output folder <code>pred_path</code> where the predictions will be saved, with a batch size <code>bs</code>, <code>num_workers</code>,
+and suffix of the prediction images <code>suffix</code> (default='png').</p>
 
 </div>
 
@@ -109,6 +159,16 @@ of :class:<code>~torch.utils.data.DataLoader</code>.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">horse2zebra</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="s1">&#39;https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 </div>
     {% endraw %}
@@ -116,19 +176,84 @@ of :class:<code>~torch.utils.data.DataLoader</code>.</p>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">folders</span> <span class="o">=</span> <span class="n">horse2zebra</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span><span class="o">.</span><span class="n">sorted</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainA_path</span> <span class="o">=</span> <span class="n">folders</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">trainB_path</span> <span class="o">=</span> <span class="n">folders</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">testA_path</span> <span class="o">=</span> <span class="n">folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">testB_path</span> <span class="o">=</span> <span class="n">folders</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">get_dls</span><span class="p">(</span><span class="n">trainA_path</span><span class="p">,</span> <span class="n">trainB_path</span><span class="p">,</span><span class="n">load_size</span><span class="o">=</span><span class="mi">286</span><span class="p">)</span>
+<span class="n">cycle_gan</span> <span class="o">=</span> <span class="n">CycleGAN</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">cycle_gan</span><span class="p">)</span>
+<span class="c1">#learn.load(&#39;h2z-200epoch&#39;)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preds_path</span> <span class="o">=</span> <span class="s1">&#39;./h2z-preds&#39;</span>
+<span class="n">get_preds_cyclegan</span><span class="p">(</span><span class="n">learn</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">testA_path</span><span class="p">),</span><span class="n">preds_path</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
 
 <div class="output_wrapper">
 <div class="output">
 
 <div class="output_area">
 
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_preds_cyclegan" class="doc_header"><code>get_preds_cyclegan</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L50" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_preds_cyclegan</code>(<strong><code>learn</code></strong>, <strong><code>test_path</code></strong>, <strong><code>pred_path</code></strong>, <strong><code>bs</code></strong>=<em><code>4</code></em>, <strong><code>num_workers</code></strong>=<em><code>4</code></em>, <strong><code>suffix</code></strong>=<em><code>'png'</code></em>)</p>
-</blockquote>
-
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 30/30 [00:01&lt;00:00, 16.69it/s]
+</pre>
 </div>
-
 </div>
 
 </div>

@@ -10,6 +10,7 @@ from fastai.vision.gan import *
 
 # Cell
 class RandPair(Transform):
+    "Returns a random image from domain B, resulting in a random pair of images from domain A and B."
     def __init__(self,itemsB): self.itemsB = itemsB
     def encodes(self,i): return random.choice(self.itemsB)
 

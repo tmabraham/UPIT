@@ -34,6 +34,7 @@ def pad_conv_norm_relu(ch_in:int, ch_out:int, pad_mode:str, norm_layer:nn.Module
 
 # Cell
 class ResnetBlock(nn.Module):
+    "nn.Module for the ResNet Block"
     def __init__(self, dim:int, pad_mode:str='reflection', norm_layer:nn.Module=None, dropout:float=0., bias:bool=True):
         super().__init__()
         assert pad_mode in ['zeros', 'reflection', 'border'], f'padding {pad_mode} not implemented.'
@@ -103,42 +104,29 @@ def discriminator(ch_in:int, n_ftrs:int=64, n_layers:int=3, norm_layer:nn.Module
 # Cell
 class CycleGAN(nn.Module):
     """
-    CycleGAN model.
+    CycleGAN model. \n
     When called, takes in input batch of real images from both domains and outputs fake images for the opposite domains (with the generators).
     Also outputs identity images after passing the images into generators that outputs its domain type (needed for identity loss).
 
-    Attributes:
-
-    `G_A` (`nn.Module`): takes real input B and generates fake input A
-
-    `G_B` (`nn.Module`): takes real input A and generates fake input B
-
-    `D_A` (`nn.Module`): trained to make the difference between real input A and fake input A
-
-    `D_B` (`nn.Module`): trained to make the difference between real input B and fake input B
-
+    Attributes: \n
+    `G_A` (`nn.Module`): takes real input B and generates fake input A \n
+    `G_B` (`nn.Module`): takes real input A and generates fake input B \n
+    `D_A` (`nn.Module`): trained to make the difference between real input A and fake input A \n
+    `D_B` (`nn.Module`): trained to make the difference between real input B and fake input B \n
     """
     def __init__(self, ch_in:int=3, ch_out:int=3, n_features:int=64, disc_layers:int=3, gen_blocks:int=9, lsgan:bool=True,
                  drop:float=0., norm_layer:nn.Module=None):
         """
         Constructor for CycleGAN model.
 
-        Arguments:
-
-        `ch_in` (`int`): Number of input channels (default=3)
-
-        `ch_out` (`int`): Number of output channels (default=3)
-
-        `n_features` (`int`): Number of input features (default=64)
-
-        `disc_layers` (`int`): Number of discriminator layers (default=3)
-
-        `gen_blocks` (`int`): Number of residual blocks in the generator (default=9)
-
-        `lsgan` (`bool`): LSGAN training objective (output unnormalized float) or not? (default=True)
-
-        `drop` (`float`): Level of dropout (default=0)
-
+        Arguments: \n
+        `ch_in` (`int`): Number of input channels (default=3) \n
+        `ch_out` (`int`): Number of output channels (default=3) \n
+        `n_features` (`int`): Number of input features (default=64) \n
+        `disc_layers` (`int`): Number of discriminator layers (default=3) \n
+        `gen_blocks` (`int`): Number of residual blocks in the generator (default=9) \n
+        `lsgan` (`bool`): LSGAN training objective (output unnormalized float) or not? (default=True) \n
+        `drop` (`float`): Level of dropout (default=0) \n
         `norm_layer` (`nn.Module`): Type of normalization layer to use in the models (default=None)
         """
 

@@ -1,3 +1,6 @@
+# UPIT-specific
+*.tif
+
 *.bak
 .gitattributes
 .last_checked
