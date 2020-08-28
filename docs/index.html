@@ -5,8 +5,8 @@ title: Unpaired image-to-image translation
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "A PyTorch package for unpaired image-to-image translation with CycleGAN model."
-description: "A PyTorch package for unpaired image-to-image translation with CycleGAN model."
+summary: "A fastai/PyTorch package for unpaired image-to-image translation currently with CycleGAN implementation."
+description: "A fastai/PyTorch package for unpaired image-to-image translation currently with CycleGAN implementation."
 ---
 <!--
 
@@ -29,7 +29,8 @@ description: "A PyTorch package for unpaired image-to-image translation with Cyc
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>TO BE UPDATED</p>
+<p>This is a package for training and testing unpaired image-to-image translation models. It currently only includes the <a href="https://junyanz.github.io/CycleGAN/">CycleGAN model</a>, but other models will be implemented in the future.</p>
+<p>This package uses <a href="https://github.com/fastai/fastai">fastai</a> to accelerate deep learning experimentation. Additionally, <a href="https://github.com/fastai/nbdev">nbdev</a> was used to develop the package and produce documentation based on a series of notebooks.</p>
 
 </div>
 </div>
@@ -42,8 +43,9 @@ description: "A PyTorch package for unpaired image-to-image translation with Cyc
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In the future, you will be able to install this package like so:</p>
-<p><code>pip install upit</code></p>
+<p>To install, use <code>pip</code>:</p>
+<p><code>pip install git+https://github.com/tmabraham/UPIT.git</code></p>
+<p>The package requires torch 1.6.0, torchvision 0.7.0, fastai 2.0.0 (and its dependencies), and tqdm. It also requires nbdev 0.2.26 if you would like to add features to the package.</p>
 
 </div>
 </div>
@@ -56,11 +58,31 @@ description: "A PyTorch package for unpaired image-to-image translation with Cyc
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>To be updated!</p>
+<p>Training a CycleGAN model is easy with UPIT! Given the paths of the images from the two domains <code>trainA_path</code> and <code>trainB_path</code>, you can do the following:</p>
 
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">get_dls</span><span class="p">(</span><span class="n">trainA_path</span><span class="p">,</span> <span class="n">trainB_path</span><span class="p">)</span>
+<span class="n">cycle_gan</span> <span class="o">=</span> <span class="n">CycleGAN</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">cycle_gan</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 </div>
  
 
