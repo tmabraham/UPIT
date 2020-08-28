@@ -58,7 +58,7 @@ def resnet_generator(ch_in:int, ch_out:int, n_ftrs:int=64, norm_layer:nn.Module=
     return nn.Sequential(*layers)
 
 model = resnet_generator(ch_in=3, ch_out=3, n_ftrs=64, norm_layer=None, dropout=0, n_blocks=9)
-#model.load_state_dict()
+model.load_state_dict(torch.load('generator.pth'))
 model.eval()
 
 
