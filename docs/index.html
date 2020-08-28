@@ -45,7 +45,7 @@ description: "A fastai/PyTorch package for unpaired image-to-image translation c
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>To install, use <code>pip</code>:</p>
 <p><code>pip install git+https://github.com/tmabraham/UPIT.git</code></p>
-<p>The package requires torch 1.6.0, torchvision 0.7.0, fastai 2.0.0 (and its dependencies), and tqdm. It also requires nbdev 0.2.26 if you would like to add features to the package.</p>
+<p>The package uses torch 1.6.0, torchvision 0.7.0, fastai 2.0.0 (and its dependencies), and tqdm. It also requires nbdev 0.2.26 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.</p>
 
 </div>
 </div>
@@ -72,8 +72,8 @@ description: "A fastai/PyTorch package for unpaired image-to-image translation c
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">get_dls</span><span class="p">(</span><span class="n">trainA_path</span><span class="p">,</span> <span class="n">trainB_path</span><span class="p">)</span>
 <span class="n">cycle_gan</span> <span class="o">=</span> <span class="n">CycleGAN</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">64</span><span class="p">)</span>
-<span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">cycle_gan</span><span class="p">)</span>
-<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">cycle_gan</span><span class="p">,</span><span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">,</span><span class="n">mom</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">sqr_mom</span><span class="o">=</span><span class="mf">0.999</span><span class="p">))</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">)</span>
 </pre></div>
 
     </div>

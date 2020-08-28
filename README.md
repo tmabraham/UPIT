@@ -12,7 +12,7 @@ To install, use `pip`:
 
 `pip install git+https://github.com/tmabraham/UPIT.git`
 
-The package requires torch 1.6.0, torchvision 0.7.0, fastai 2.0.0 (and its dependencies), and tqdm. It also requires nbdev 0.2.26 if you would like to add features to the package.
+The package uses torch 1.6.0, torchvision 0.7.0, fastai 2.0.0 (and its dependencies), and tqdm. It also requires nbdev 0.2.26 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.
 
 ## How to use
 
@@ -22,6 +22,6 @@ Training a CycleGAN model is easy with UPIT! Given the paths of the images from 
 #cuda
 dls = get_dls(trainA_path, trainB_path)
 cycle_gan = CycleGAN(3,3,64)
-learn = cycle_learner(dls, cycle_gan)
-learn.fit_flat_lin(1,1,2e-4)
+learn = cycle_learner(dls, cycle_gan,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
+learn.fit_flat_lin(100,100,2e-4)
 ```
