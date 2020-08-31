@@ -92,7 +92,6 @@ class CycleGANTrainer(Callback):
         if disc: self.opt_D.hypers = self.learn.opt.hypers
 
     def before_train(self, **kwargs):
-        # Setup and define optimizers
         self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
         self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
         self.crit = self.learn.loss_func.crit
@@ -106,9 +105,9 @@ class CycleGANTrainer(Callback):
             self.opt_D.hypers = self.learn.opt.hypers
 
         self.learn.opt = self.opt_G
-        self._set_trainable()
 
     def before_batch(self, **kwargs):
+        self._set_trainable()
         self._training = self.learn.model.training
         self.learn.xb = (self.learn.xb[0],self.learn.yb[0]),
         self.learn.loss_func.set_input(*self.learn.xb)
@@ -117,28 +116,38 @@ class CycleGANTrainer(Callback):
         self.opt_D.hypers = self.learn.opt.hypers
 
     def after_batch(self, **kwargs):
-        # Discriminator training loop
-
-        self.G_A.zero_grad(); self.G_B.zero_grad()
-
-        #Obtain real and predicted images for loss calculation
-        fake_A, fake_B = self.learn.pred[0].detach(), self.learn.pred[1].detach()
-        (real_A, real_B), = self.learn.xb
+        "Discriminator training loop"
         if self._training:
+            # Obtain images
+            fake_A, fake_B = self.learn.pred[0].detach(), self.learn.pred[1].detach()
+            (real_A, real_B), = self.learn.xb
             self._set_trainable(disc=True)
-            self.D_A.zero_grad(); self.D_B.zero_grad()
-            #calculate loss, backward, step
+            # D_A loss calc. and backpropagation
             loss_D_A = 0.5 * (self.crit(self.D_A(real_A), 1) + self.crit(self.D_A(fake_A), 0))
-            loss_D_B = 0.5 * (self.crit(self.D_B(real_B), 1) + self.crit(self.D_B(fake_B), 0))
             loss_D_A.backward()
+            self.learn.loss_func.D_A_loss = loss_D_A.detach().cpu()
+            # D_B loss calc. and backpropagation
+            loss_D_B = 0.5 * (self.crit(self.D_B(real_B), 1) + self.crit(self.D_B(fake_B), 0))
             loss_D_B.backward()
+            self.learn.loss_func.D_B_loss = loss_D_A.detach().cpu()
+            # Optimizer stepping (update D_A and D_B)
             self.opt_D.step()
+            self.opt_D.zero_grad()
             self._set_trainable()
 
     def before_validate(self, **kwargs):
         self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
         self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
         self.crit = self.learn.loss_func.crit
+
+#========================WIP=====================
+#    def after_epoch(self, **kwargs):
+#        "Show a sample image"
+#        if not hasattr(self, 'last_gen'): return
+#        img = self.last_gen[0]
+#        self.imgs.append(img)
+#        self.titles.append(f'Epoch {epoch}')
+#        pbar.show_imgs(self.imgs, self.titles)
 
 # Cell
 def combined_flat_anneal(pct:float, start_lr:float, end_lr:float=0, curve_type:str='linear'):
