@@ -11,7 +11,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision
 import glob
-import tqdm
+from fastprogress.fastprogress import progress_bar
 import os
 import PIL
 
@@ -74,7 +74,7 @@ def get_preds_cyclegan(learn,test_path,pred_path,bs=4,num_workers=4,suffix='tif'
 
     test_dl = load_dataset(test_path,bs,num_workers)
     model = learn.model.G_B.cuda()
-    for i, xb in tqdm.tqdm(enumerate(test_dl),total=len(test_dl)):
+    for i, xb in progress_bar(enumerate(test_dl),total=len(test_dl)):
         fn, im = xb
         preds = (model(im.cuda())/2 + 0.5)
         for i in range(len(fn)):

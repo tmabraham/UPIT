@@ -254,10 +254,28 @@ and suffix of the prediction images <code>suffix</code> (default='png').</p>
 
 <div class="output_area">
 
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 30/30 [00:01&lt;00:00, 16.85it/s]
-</pre>
+
+<div class="output_html rendered_html output_subarea ">
+
+    <div>
+        <style>
+            /* Turns off some styling */
+            progress {
+                /* gets rid of default border in Firefox and Opera. */
+                border: none;
+                /* Needs to be in here for Safari polyfill so background images work as expected. */
+                background-size: auto;
+            }
+            .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+                background: #F44336;
+            }
+        </style>
+      <progress value='30' class='' max='30' style='width:300px; height:20px; vertical-align: middle;'></progress>
+      100.00% [30/30 00:01<00:00]
+    </div>
+    
 </div>
+
 </div>
 
 </div>
@@ -304,7 +322,8 @@ and suffix of the prediction images <code>suffix</code> (default='png').</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_generator</span><span class="p">(</span><span class="n">learn</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;generator.pth&#39;</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;generator.pth&#39;</span><span class="p">)</span>
+<span class="n">export_generator</span><span class="p">(</span><span class="n">learn</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;generator.pth&#39;</span><span class="p">)</span>
 </pre></div>
 

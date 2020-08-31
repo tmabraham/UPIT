@@ -12,7 +12,7 @@ To install, use `pip`:
 
 `pip install git+https://github.com/tmabraham/UPIT.git`
 
-The package uses torch 1.6.0, torchvision 0.7.0, fastai 2.0.0 (and its dependencies), and tqdm. It also requires nbdev 0.2.26 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.
+The package uses torch 1.6.0, torchvision 0.7.0, and fastai 2.0.0 (and its dependencies). It also requires nbdev 0.2.26 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.
 
 ## How to use
 
