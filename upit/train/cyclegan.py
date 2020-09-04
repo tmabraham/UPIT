@@ -52,7 +52,7 @@ class CycleGANLoss(nn.Module):
         `lsgan` (`bool`): Whether or not to use LSGAN objective. (default=True)
         """
         super().__init__()
-        store_attr(self,'cgan,l_A,l_B,l_idt,lsgan')
+        store_attr('cgan,l_A,l_B,l_idt,lsgan')
         self.crit = self._create_gan_loss(F.mse_loss if self.lsgan else F.binary_cross_entropy)
 
     def set_input(self, input): "set `self.real_A` and `self.real_B` for future loss calculation"; self.real_A,self.real_B = input
