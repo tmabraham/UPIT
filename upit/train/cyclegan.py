@@ -52,7 +52,7 @@ class CycleGANLoss(nn.Module):
         `lsgan` (`bool`): Whether or not to use LSGAN objective. (default=True)
         """
         super().__init__()
-        store_attr('cgan,l_A,l_B,l_idt,lsgan')
+        store_attr()
         self.crit = self._create_gan_loss(F.mse_loss if self.lsgan else F.binary_cross_entropy)
 
     def set_input(self, input): "set `self.real_A` and `self.real_B` for future loss calculation"; self.real_A,self.real_B = input
@@ -76,7 +76,7 @@ class CycleGANLoss(nn.Module):
 
 # Cell
 class CycleGANTrainer(Callback):
-    """Edited `Learner` Callback for training a CycleGAN model."""
+    """`Learner` Callback for training a CycleGAN model."""
     run_before = Recorder
 
     def __init__(self): pass
@@ -140,15 +140,6 @@ class CycleGANTrainer(Callback):
         self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
         self.crit = self.learn.loss_func.crit
 
-#========================WIP=====================
-#    def after_epoch(self, **kwargs):
-#        "Show a sample image"
-#        if not hasattr(self, 'last_gen'): return
-#        img = self.last_gen[0]
-#        self.imgs.append(img)
-#        self.titles.append(f'Epoch {epoch}')
-#        pbar.show_imgs(self.imgs, self.titles)
-
 # Cell
 def combined_flat_anneal(pct:float, start_lr:float, end_lr:float=0, curve_type:str='linear'):
     """
@@ -184,17 +175,18 @@ def fit_flat_lin(self:Learner, n_epochs:int=100, n_epochs_decay:int=100, start_l
 
 # Cell
 @delegates(Learner.__init__)
-def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, metrics:list=[], cbs:list=[], **kwargs):
+def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, show_imgs:bool=True, imgA:bool=True, imgB:bool=True, show_img_interval:bool=10, metrics:list=[], cbs:list=[], **kwargs):
     """
     Initialize and return a `Learner` object with the data in `dls`, CycleGAN model `m`, optimizer function `opt_func`, metrics `metrics`,
-    and callbacks `cbs`. Other `Learner` arguments can be passed as well.
+    and callbacks `cbs`. Additionally, if `show_imgs` is True, it will show intermediate predictions during training. Other `Learner`
+    arguments can be passed as well.
     """
     lms = LossMetrics(['id_loss_A', 'id_loss_B','gen_loss_A','gen_loss_B','cyc_loss_A','cyc_loss_B',
                        'D_A_loss', 'D_B_loss'])
-
     learn = Learner(dls, m, loss_func=CycleGANLoss(m), opt_func=opt_func,
                     cbs=[CycleGANTrainer, *cbs],metrics=[*lms, *[AvgMetric(metric) for metric in [*metrics]]])
-
+    if (imgA or imgB or show_img_interval) and not show_imgs: warnings.warn('since show_imgs is disabled, ignoring imgA, imgB and show_img_interval arguments')
+    if show_imgs: learn.add_cbs(ShowCycleGANImgsCallback(imgA=imgA,imgB=imgB,show_img_interval=show_img_interval))
     learn.recorder.train_metrics = True
     learn.recorder.valid_metrics = False
     return learn
