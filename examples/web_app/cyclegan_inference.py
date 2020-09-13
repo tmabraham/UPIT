@@ -59,7 +59,7 @@ def resnet_generator(ch_in:int, ch_out:int, n_ftrs:int=64, norm_layer:nn.Module=
     return nn.Sequential(*layers)
 
 model = resnet_generator(ch_in=3, ch_out=3, n_ftrs=64, norm_layer=None, dropout=0, n_blocks=9)
-model.load_state_dict(torch.load('generator.pth'))
+model.load_state_dict(torch.load('generator.pth',map_location=torch.device('cpu')))
 model.eval()
 
 
@@ -70,9 +70,9 @@ topilimage = torchvision.transforms.ToPILImage()
 def predict(input):
     im = normalize_fn(totensor(input))
     print(im.shape)
-    preds = model(im.unsqueeze(0).cuda())/2 + 0.5
+    preds = model(im.unsqueeze(0))/2 + 0.5
     print(preds.shape)
-    return topilimage(preds.squeeze(0).detach().cpu())
+    return topilimage(preds.squeeze(0).detach())
 
 gr_interface = gr.Interface(fn=predict, inputs=gr.inputs.Image(shape=(512, 512)), outputs="image", title='Horse-to-Zebra CycleGAN')
 gr_interface.launch(inline=False,share=True)
