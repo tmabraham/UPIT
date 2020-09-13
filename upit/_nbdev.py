@@ -34,7 +34,8 @@ index = {"convT_norm_relu": "01_models.cyclegan.ipynb",
          "cycle_learner": "03_train.cyclegan.ipynb",
          "FolderDataset": "04_inference.cyclegan.ipynb",
          "load_dataset": "04_inference.cyclegan.ipynb",
-         "get_preds_cyclegan": "04_inference.cyclegan.ipynb"}
+         "get_preds_cyclegan": "04_inference.cyclegan.ipynb",
+         "export_generator": "04_inference.cyclegan.ipynb"}
 
 modules = ["models/cyclegan.py",
            "models/junyanz.py",

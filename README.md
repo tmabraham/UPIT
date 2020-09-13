@@ -25,9 +25,3 @@ cycle_gan = CycleGAN(3,3,64)
 learn = cycle_learner(dls, cycle_gan,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
 learn.fit_flat_lin(100,100,2e-4)
 ```
-
-## Demo web app
-
-In the examples/web_app folder, code for a Heroku demo web app (which can be deployed for free) is provided.
-A Heroku web app runs at:
-https://upit-cyclegan.herokuapp.com 
