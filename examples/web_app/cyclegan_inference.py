@@ -1,4 +1,5 @@
 import gradio as gr
+import torch
 import torchvision
 from torch import nn
 from typing import List
