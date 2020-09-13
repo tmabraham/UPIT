@@ -75,4 +75,4 @@ def predict(input):
     return topilimage(preds.squeeze(0).detach())
 
 gr_interface = gr.Interface(fn=predict, inputs=gr.inputs.Image(shape=(256, 256)), outputs="image", title='Horse-to-Zebra CycleGAN')
-gr_interface.launch(inline=False,share=True)
+gr_interface.launch(inline=False,share=False)
