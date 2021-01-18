@@ -41,7 +41,8 @@ modules = ["models/cyclegan.py",
            "models/junyanz.py",
            "data/unpaired.py",
            "train/cyclegan.py",
-           "inference/cyclegan.py"]
+           "inference/cyclegan.py",
+           "metrics.py"]
 
 doc_url = "https://tmabraham.github.io/UPIT"
 

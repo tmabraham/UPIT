@@ -211,7 +211,7 @@ def fit_flat_lin(self:Learner, n_epochs:int=100, n_epochs_decay:int=100, start_l
 
 # Cell
 @delegates(Learner.__init__)
-def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, show_imgs:bool=True, imgA:bool=True, imgB:bool=True, show_img_interval:bool=10, metrics:list=[], cbs:list=[], **kwargs):
+def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, loss_func=CycleGANLoss, show_imgs:bool=True, imgA:bool=True, imgB:bool=True, show_img_interval:bool=10, metrics:list=[], cbs:list=[], **kwargs):
     """
     Initialize and return a `Learner` object with the data in `dls`, CycleGAN model `m`, optimizer function `opt_func`, metrics `metrics`,
     and callbacks `cbs`. Additionally, if `show_imgs` is True, it will show intermediate predictions during training. It will show domain
@@ -220,7 +220,7 @@ def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, show_imgs:bool=True
     """
     lms = LossMetrics(['id_loss_A', 'id_loss_B','gen_loss_A','gen_loss_B','cyc_loss_A','cyc_loss_B',
                        'D_A_loss', 'D_B_loss'])
-    learn = Learner(dls, m, loss_func=CycleGANLoss(m), opt_func=opt_func,
+    learn = Learner(dls, m, loss_func=loss_func(m), opt_func=opt_func,
                     cbs=[CycleGANTrainer, *cbs],metrics=[*lms, *[AvgMetric(metric) for metric in [*metrics]]])
     if (imgA or imgB or show_img_interval) and not show_imgs: warnings.warn('since show_imgs is disabled, ignoring imgA, imgB and show_img_interval arguments')
     if show_imgs: learn.add_cbs(ShowCycleGANImgsCallback(imgA=imgA,imgB=imgB,show_img_interval=show_img_interval))
