@@ -60,7 +60,7 @@ def load_dataset(test_path,bs=4,num_workers=4):
     return loader
 
 # Cell
-def get_preds_cyclegan(learn,test_path,pred_path,bs=4,num_workers=4,suffix='tif'):
+def get_preds_cyclegan(learn,test_path,pred_path,convert_to='B',bs=4,num_workers=4,suffix='tif'):
     """
     A prediction function that takes the Learner object `learn` with the trained model, the `test_path` folder with the images to perform
     batch inference on, and the output folder `pred_path` where the predictions will be saved, with a batch size `bs`, `num_workers`,
@@ -73,12 +73,13 @@ def get_preds_cyclegan(learn,test_path,pred_path,bs=4,num_workers=4,suffix='tif'
         os.mkdir(pred_path)
 
     test_dl = load_dataset(test_path,bs,num_workers)
-    model = learn.model.G_B.cuda()
+    if convert_to=='B': model = learn.model.G_B.cuda()
+    else:               model = learn.model.G_A.cuda()
     for i, xb in progress_bar(enumerate(test_dl),total=len(test_dl)):
         fn, im = xb
         preds = (model(im.cuda())/2 + 0.5)
         for i in range(len(fn)):
-            new_fn = os.path.join(pred_path,'.'.join([os.path.basename(fn[i]).split('.')[0]+'_fakeB',suffix]))
+            new_fn = os.path.join(pred_path,'.'.join([os.path.basename(fn[i]).split('.')[0]+f'_fake{convert_to}',suffix]))
             torchvision.utils.save_image(preds[i],new_fn)
 
 # Cell
