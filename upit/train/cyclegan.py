@@ -221,7 +221,7 @@ def cycle_learner(dls:DataLoader, m:CycleGAN, opt_func=Adam, loss_func=CycleGANL
     lms = LossMetrics(['id_loss_A', 'id_loss_B','gen_loss_A','gen_loss_B','cyc_loss_A','cyc_loss_B',
                        'D_A_loss', 'D_B_loss'])
     learn = Learner(dls, m, loss_func=loss_func(m), opt_func=opt_func,
-                    cbs=[CycleGANTrainer, *cbs],metrics=[*lms, *[AvgMetric(metric) for metric in [*metrics]]])
+                    cbs=[CycleGANTrainer, *cbs],metrics=[*lms, *metrics])
     if (imgA or imgB or show_img_interval) and not show_imgs: warnings.warn('since show_imgs is disabled, ignoring imgA, imgB and show_img_interval arguments')
     if show_imgs: learn.add_cbs(ShowCycleGANImgsCallback(imgA=imgA,imgB=imgB,show_img_interval=show_img_interval))
     learn.recorder.train_metrics = True
