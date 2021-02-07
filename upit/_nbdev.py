@@ -35,7 +35,9 @@ index = {"convT_norm_relu": "01_models.cyclegan.ipynb",
          "FolderDataset": "04_inference.cyclegan.ipynb",
          "load_dataset": "04_inference.cyclegan.ipynb",
          "get_preds_cyclegan": "04_inference.cyclegan.ipynb",
-         "export_generator": "04_inference.cyclegan.ipynb"}
+         "export_generator": "04_inference.cyclegan.ipynb",
+         "InceptionV3": "05_metrics.ipynb",
+         "FrechetInceptionDistance": "05_metrics.ipynb"}
 
 modules = ["models/cyclegan.py",
            "models/junyanz.py",
