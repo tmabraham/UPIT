@@ -4,6 +4,8 @@
 ignore/
 test/
 
+examples/wandb/
+
 *.bak
 .gitattributes
 .last_checked
