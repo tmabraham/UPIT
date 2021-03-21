@@ -92,8 +92,8 @@ class CycleGANTrainer(Callback):
         if disc: self.opt_D.hypers = self.learn.opt.hypers
 
     def before_train(self, **kwargs):
-        self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
-        self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
+        #self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
+        #self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
         self.crit = self.learn.loss_func.crit
         if not getattr(self,'opt_G',None):
             self.opt_G = self.learn.opt_func(self.learn.splitter(nn.Sequential(*flatten_model(self.G_A), *flatten_model(self.G_B))), self.learn.lr)
@@ -129,15 +129,15 @@ class CycleGANTrainer(Callback):
             # D_B loss calc. and backpropagation
             loss_D_B = 0.5 * (self.crit(self.D_B(real_B), 1) + self.crit(self.D_B(fake_B), 0))
             loss_D_B.backward()
-            self.learn.loss_func.D_B_loss = loss_D_A.detach().cpu()
+            self.learn.loss_func.D_B_loss = loss_D_B.detach().cpu()
             # Optimizer stepping (update D_A and D_B)
             self.opt_D.step()
             self.opt_D.zero_grad()
             self._set_trainable()
 
     def before_validate(self, **kwargs):
-        self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
-        self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
+        #self.G_A,self.G_B = self.learn.model.G_A,self.learn.model.G_B
+        #self.D_A,self.D_B = self.learn.model.D_A,self.learn.model.D_B
         self.crit = self.learn.loss_func.crit
 
 # Cell
