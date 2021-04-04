@@ -37,14 +37,18 @@ index = {"convT_norm_relu": "01_models.cyclegan.ipynb",
          "get_preds_cyclegan": "04_inference.cyclegan.ipynb",
          "export_generator": "04_inference.cyclegan.ipynb",
          "InceptionV3": "05_metrics.ipynb",
-         "FrechetInceptionDistance": "05_metrics.ipynb"}
+         "FrechetInceptionDistance": "05_metrics.ipynb",
+         "SaveModelAtEndCallback": "06_tracking.wandb.ipynb",
+         "log_dataset": "06_tracking.wandb.ipynb",
+         "UPITWandbCallback": "06_tracking.wandb.ipynb"}
 
 modules = ["models/cyclegan.py",
            "models/junyanz.py",
            "data/unpaired.py",
            "train/cyclegan.py",
            "inference/cyclegan.py",
-           "metrics.py"]
+           "metrics.py",
+           "tracking/wandb.py"]
 
 doc_url = "https://tmabraham.github.io/UPIT"
 
