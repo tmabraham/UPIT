@@ -4,7 +4,9 @@
 ignore/
 test/
 
+nbs/wandb/
 examples/wandb/
+examples/*_private.ipynb
 
 *.bak
 .gitattributes
