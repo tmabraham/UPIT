@@ -13,9 +13,9 @@
     },
     "Training loop":{
       "CycleGAN": "/train.cyclegan",
-      "DualGAN": "/train.dualgan"
+      "DualGAN": "/train.dualgan",
+      "Metrics": "/metrics"
     },
-    "Metrics": "/metrics",
     "Tracking":{
       "Weights and Biases": "/tracking.wandb"
     },
