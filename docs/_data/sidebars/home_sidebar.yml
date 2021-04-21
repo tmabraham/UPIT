@@ -15,6 +15,12 @@ entries:
     - output: web,pdf
       title: CycleGAN
       url: /models.cyclegan
+    - output: web,pdf
+      title: GANILLA
+      url: /models.ganilla
+    - output: web,pdf
+      title: DualGAN
+      url: models.dualgan
     output: web
     title: Models
   - folderitems:
@@ -27,8 +33,20 @@ entries:
     - output: web,pdf
       title: CycleGAN
       url: /train.cyclegan
+    - output: web,pdf
+      title: DualGAN
+      url: /train.dualgan
     output: web
     title: Training loop
+  - output: web,pdf
+    title: Metrics
+    url: /metrics
+  - folderitems:
+    - output: web,pdf
+      title: Weights and Biases
+      url: /tracking.wandb
+    output: web
+    title: Tracking
   - folderitems:
     - output: web,pdf
       title: CycleGAN

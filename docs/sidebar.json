@@ -4,13 +4,20 @@
         "Overview":"/"
     },
     "Models":{
-        "CycleGAN":"/models.cyclegan"
+        "CycleGAN":"/models.cyclegan",
+        "GANILLA": "/models.ganilla",
+        "DualGAN": "models.dualgan"
     },
     "Data loading":{
       "Unpaired data loading": "/data.unpaired"
     },
     "Training loop":{
-      "CycleGAN": "/train.cyclegan"
+      "CycleGAN": "/train.cyclegan",
+      "DualGAN": "/train.dualgan"
+    },
+    "Metrics": "/metrics",
+    "Tracking":{
+      "Weights and Biases": "/tracking.wandb"
     },
     "Batch inference":{
       "CycleGAN": "/inference.cyclegan"

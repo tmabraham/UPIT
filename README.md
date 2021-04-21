@@ -44,4 +44,4 @@ learn = cycle_learner(dls, dual_gan, opt_func=RMSProp)
 learn.fit_flat_lin(100,100,2e-4)
 ```
 
-Additionally, we provide 
+Additionally, we provide metrics for quantitative evaluation of the models, as well as experiment tracking with Weights and Biases. Check the [documentation](https://tmabraham.github.io/UPIT) for more information!
