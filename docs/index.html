@@ -2,11 +2,13 @@
 
 title: Unpaired image-to-image translation
 
+
 keywords: fastai
 sidebar: home_sidebar
 
 summary: "A fastai/PyTorch package for unpaired image-to-image translation currently with CycleGAN implementation."
 description: "A fastai/PyTorch package for unpaired image-to-image translation currently with CycleGAN implementation."
+nb_path: "nbs/index.ipynb"
 ---
 <!--
 
@@ -29,7 +31,7 @@ description: "A fastai/PyTorch package for unpaired image-to-image translation c
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is a package for training and testing unpaired image-to-image translation models. It currently only includes the <a href="https://junyanz.github.io/CycleGAN/">CycleGAN model</a>, but other models will be implemented in the future.</p>
+<p>This is a package for training and testing unpaired image-to-image translation models. It currently only includes the <a href="https://junyanz.github.io/CycleGAN/">CycleGAN</a>, <a href="https://arxiv.org/abs/1704.02510">DualGAN</a>, and <a href="https://arxiv.org/abs/2002.05638">GANILLA</a> models, but other models will be implemented in the future.</p>
 <p>This package uses <a href="https://github.com/fastai/fastai">fastai</a> to accelerate deep learning experimentation. Additionally, <a href="https://github.com/fastai/nbdev">nbdev</a> was used to develop the package and produce documentation based on a series of notebooks.</p>
 
 </div>
@@ -45,7 +47,7 @@ description: "A fastai/PyTorch package for unpaired image-to-image translation c
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>To install, use <code>pip</code>:</p>
 <p><code>pip install git+https://github.com/tmabraham/UPIT.git</code></p>
-<p>The package uses torch 1.6.0, torchvision 0.7.0, and fastai 2.0.0 (and its dependencies). It also requires nbdev 0.2.26 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.</p>
+<p>The package uses torch 1.7.1, torchvision 0.8.2, and fastai 2.3.0 (and its dependencies). It also requires nbdev 1.1.13 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.</p>
 
 </div>
 </div>
@@ -83,6 +85,65 @@ description: "A fastai/PyTorch package for unpaired image-to-image translation c
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The GANILLA model is only a different generator model architecture (that's meant to strike a better balance between style and content), so the same <a href="/UPITtrain.cyclegan.html#cycle_learner"><code>cycle_learner</code></a> class can be used.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ganilla</span> <span class="o">=</span> <span class="n">GANILLA</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">ganilla</span><span class="p">,</span><span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">,</span><span class="n">mom</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">sqr_mom</span><span class="o">=</span><span class="mf">0.999</span><span class="p">))</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, we provide separate functions/classes for <a href="/UPITmodels.dualgan.html#DualGAN"><code>DualGAN</code></a> model and training:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dual_gan</span> <span class="o">=</span> <span class="n">DualGAN</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">dual_gan</span><span class="p">,</span> <span class="n">opt_func</span><span class="o">=</span><span class="n">RMSProp</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Additionally, we provide</p>
+
+</div>
+</div>
+</div>
 </div>
  
 

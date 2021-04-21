@@ -12,7 +12,7 @@ To install, use `pip`:
 
 `pip install git+https://github.com/tmabraham/UPIT.git`
 
-The package uses torch 1.6.0, torchvision 0.7.0, and fastai 2.0.0 (and its dependencies). It also requires nbdev 0.2.26 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.
+The package uses torch 1.7.1, torchvision 0.8.2, and fastai 2.3.0 (and its dependencies). It also requires nbdev 1.1.13 if you would like to add features to the package. Finally, for creating a web app model interface, gradio 1.1.6 is used.
 
 ## How to use
 
@@ -25,4 +25,23 @@ cycle_gan = CycleGAN(3,3,64)
 learn = cycle_learner(dls, cycle_gan,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
 learn.fit_flat_lin(100,100,2e-4)
 ```
-     
+
+The GANILLA model is only a different generator model architecture (that's meant to strike a better balance between style and content), so the same `cycle_learner` class can be used.
+
+```python
+#cuda
+ganilla = GANILLA(3,3,64)
+learn = cycle_learner(dls, ganilla,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
+learn.fit_flat_lin(100,100,2e-4)
+```
+
+Finally, we provide separate functions/classes for `DualGAN` model and training:
+
+```python
+#cuda
+dual_gan = DualGAN(3,64,3)
+learn = cycle_learner(dls, dual_gan, opt_func=RMSProp)
+learn.fit_flat_lin(100,100,2e-4)
+```
+
+Additionally, we provide 

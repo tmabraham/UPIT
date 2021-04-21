@@ -2,11 +2,13 @@
 
 title: Original CycleGAN implementation
 
+
 keywords: fastai
 sidebar: home_sidebar
 
 
 
+nb_path: "nbs/01b_models.junyanz.ipynb"
 ---
 <!--
 
@@ -39,13 +41,6 @@ sidebar: home_sidebar
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -53,7 +48,7 @@ sidebar: home_sidebar
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Identity" class="doc_header"><code>class</code> <code>Identity</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Identity</code>() :: <code>Module</code></p>
+<h2 id="Identity" class="doc_header"><code>class</code> <code>Identity</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Identity</code>() :: <code>Module</code></p>
 </blockquote>
 <p>Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -76,6 +71,9 @@ class Model(nn.Module):
 </code></pre>
 <p>Submodules assigned in this way will be registered, and will have their
 parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>:ivar training: Boolean represents whether this module is in training or
+                evaluation mode.
+:vartype training: bool</p>
 
 </div>
 
@@ -98,7 +96,7 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_norm_layer" class="doc_header"><code>get_norm_layer</code><a href="__main__.py#L19" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_norm_layer</code>(<strong><code>norm_type</code></strong>=<em><code>'instance'</code></em>)</p>
+<h4 id="get_norm_layer" class="doc_header"><code>get_norm_layer</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L25" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_norm_layer</code>(<strong><code>norm_type</code></strong>=<em><code>'instance'</code></em>)</p>
 </blockquote>
 <p>Return a normalization layer</p>
 <p>Parameters:
@@ -127,7 +125,7 @@ For InstanceNorm, we do not use learnable affine parameters. We do not track run
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_scheduler" class="doc_header"><code>get_scheduler</code><a href="__main__.py#L39" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_scheduler</code>(<strong><code>optimizer</code></strong>, <strong><code>opt</code></strong>)</p>
+<h4 id="get_scheduler" class="doc_header"><code>get_scheduler</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L45" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_scheduler</code>(<strong><code>optimizer</code></strong>, <strong><code>opt</code></strong>)</p>
 </blockquote>
 <p>Return a learning rate scheduler</p>
 <p>Parameters:
@@ -160,7 +158,7 @@ See <a href="https://pytorch.org/docs/stable/optim.html">https://pytorch.org/doc
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="init_weights" class="doc_header"><code>init_weights</code><a href="__main__.py#L68" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>init_weights</code>(<strong><code>net</code></strong>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>)</p>
+<h4 id="init_weights" class="doc_header"><code>init_weights</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L74" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>init_weights</code>(<strong><code>net</code></strong>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>)</p>
 </blockquote>
 <p>Initialize network weights.</p>
 <p>Parameters:
@@ -191,7 +189,7 @@ work better for some applications. Feel free to try yourself.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="init_net" class="doc_header"><code>init_net</code><a href="__main__.py#L102" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>init_net</code>(<strong><code>net</code></strong>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>, <strong><code>gpu_ids</code></strong>=<em><code>[]</code></em>)</p>
+<h4 id="init_net" class="doc_header"><code>init_net</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L108" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>init_net</code>(<strong><code>net</code></strong>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>, <strong><code>gpu_ids</code></strong>=<em><code>[]</code></em>)</p>
 </blockquote>
 <p>Initialize a network: 1. register CPU/GPU device (with multi-GPU support); 2. initialize the network weights
 Parameters:
@@ -222,7 +220,7 @@ Parameters:
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="define_G" class="doc_header"><code>define_G</code><a href="__main__.py#L120" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>define_G</code>(<strong><code>input_nc</code></strong>, <strong><code>output_nc</code></strong>, <strong><code>ngf</code></strong>, <strong><code>netG</code></strong>, <strong><code>norm</code></strong>=<em><code>'batch'</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>, <strong><code>gpu_ids</code></strong>=<em><code>[]</code></em>)</p>
+<h4 id="define_G" class="doc_header"><code>define_G</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L126" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>define_G</code>(<strong><code>input_nc</code></strong>, <strong><code>output_nc</code></strong>, <strong><code>ngf</code></strong>, <strong><code>netG</code></strong>, <strong><code>norm</code></strong>=<em><code>'batch'</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>, <strong><code>gpu_ids</code></strong>=<em><code>[]</code></em>)</p>
 </blockquote>
 <p>Create a generator</p>
 <p>Parameters:
@@ -269,7 +267,7 @@ We adapt Torch code from Justin Johnson's neural style transfer project (https:/
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="define_D" class="doc_header"><code>define_D</code><a href="__main__.py#L163" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>define_D</code>(<strong><code>input_nc</code></strong>, <strong><code>ndf</code></strong>, <strong><code>netD</code></strong>, <strong><code>n_layers_D</code></strong>=<em><code>3</code></em>, <strong><code>norm</code></strong>=<em><code>'batch'</code></em>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>, <strong><code>gpu_ids</code></strong>=<em><code>[]</code></em>)</p>
+<h4 id="define_D" class="doc_header"><code>define_D</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L169" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>define_D</code>(<strong><code>input_nc</code></strong>, <strong><code>ndf</code></strong>, <strong><code>netD</code></strong>, <strong><code>n_layers_D</code></strong>=<em><code>3</code></em>, <strong><code>norm</code></strong>=<em><code>'batch'</code></em>, <strong><code>init_type</code></strong>=<em><code>'normal'</code></em>, <strong><code>init_gain</code></strong>=<em><code>0.02</code></em>, <strong><code>gpu_ids</code></strong>=<em><code>[]</code></em>)</p>
 </blockquote>
 <p>Create a discriminator</p>
 <p>Parameters:
@@ -319,7 +317,7 @@ It encourages greater color diversity but has no effect on spatial statistics.
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="GANLoss" class="doc_header"><code>class</code> <code>GANLoss</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>GANLoss</code>(<strong><code>gan_mode</code></strong>, <strong><code>target_real_label</code></strong>=<em><code>1.0</code></em>, <strong><code>target_fake_label</code></strong>=<em><code>0.0</code></em>) :: <code>Module</code></p>
+<h2 id="GANLoss" class="doc_header"><code>class</code> <code>GANLoss</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L216" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>GANLoss</code>(<strong><code>gan_mode</code></strong>, <strong><code>target_real_label</code></strong>=<em><code>1.0</code></em>, <strong><code>target_fake_label</code></strong>=<em><code>0.0</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Define different GAN objectives.</p>
 <p>The GANLoss class abstracts away the need to create the target label tensor
@@ -346,7 +344,7 @@ that has the same size as the input.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="cal_gradient_penalty" class="doc_header"><code>cal_gradient_penalty</code><a href="__main__.py#L279" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>cal_gradient_penalty</code>(<strong><code>netD</code></strong>, <strong><code>real_data</code></strong>, <strong><code>fake_data</code></strong>, <strong><code>device</code></strong>, <strong><code>type</code></strong>=<em><code>'mixed'</code></em>, <strong><code>constant</code></strong>=<em><code>1.0</code></em>, <strong><code>lambda_gp</code></strong>=<em><code>10.0</code></em>)</p>
+<h4 id="cal_gradient_penalty" class="doc_header"><code>cal_gradient_penalty</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L285" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>cal_gradient_penalty</code>(<strong><code>netD</code></strong>, <strong><code>real_data</code></strong>, <strong><code>fake_data</code></strong>, <strong><code>device</code></strong>, <strong><code>type</code></strong>=<em><code>'mixed'</code></em>, <strong><code>constant</code></strong>=<em><code>1.0</code></em>, <strong><code>lambda_gp</code></strong>=<em><code>10.0</code></em>)</p>
 </blockquote>
 <p>Calculate the gradient penalty loss, used in WGAN-GP paper <a href="https://arxiv.org/abs/1704.00028">https://arxiv.org/abs/1704.00028</a></p>
 <p>Arguments:
@@ -380,7 +378,7 @@ that has the same size as the input.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ResnetGenerator" class="doc_header"><code>class</code> <code>ResnetGenerator</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResnetGenerator</code>(<strong><code>input_nc</code></strong>, <strong><code>output_nc</code></strong>, <strong><code>ngf</code></strong>=<em><code>64</code></em>, <strong><code>norm_layer</code></strong>=<em><code>'BatchNorm2d'</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>, <strong><code>n_blocks</code></strong>=<em><code>6</code></em>, <strong><code>padding_type</code></strong>=<em><code>'reflect'</code></em>) :: <code>Module</code></p>
+<h2 id="ResnetGenerator" class="doc_header"><code>class</code> <code>ResnetGenerator</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L322" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResnetGenerator</code>(<strong><code>input_nc</code></strong>, <strong><code>output_nc</code></strong>, <strong><code>ngf</code></strong>=<em><code>64</code></em>, <strong><code>norm_layer</code></strong>=<em><code>BatchNorm2d</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>, <strong><code>n_blocks</code></strong>=<em><code>6</code></em>, <strong><code>padding_type</code></strong>=<em><code>'reflect'</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Resnet-based generator that consists of Resnet blocks between a few downsampling/upsampling operations.</p>
 <p>We adapt Torch code and idea from Justin Johnson's neural style transfer project(<a href="https://github.com/jcjohnson/fast-neural-style">https://github.com/jcjohnson/fast-neural-style</a>)</p>
@@ -406,7 +404,7 @@ that has the same size as the input.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ResnetBlock" class="doc_header"><code>class</code> <code>ResnetBlock</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResnetBlock</code>(<strong><code>dim</code></strong>, <strong><code>padding_type</code></strong>, <strong><code>norm_layer</code></strong>, <strong><code>use_dropout</code></strong>, <strong><code>use_bias</code></strong>) :: <code>Module</code></p>
+<h2 id="ResnetBlock" class="doc_header"><code>class</code> <code>ResnetBlock</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L383" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResnetBlock</code>(<strong><code>dim</code></strong>, <strong><code>padding_type</code></strong>, <strong><code>norm_layer</code></strong>, <strong><code>use_dropout</code></strong>, <strong><code>use_bias</code></strong>) :: <code>Module</code></p>
 </blockquote>
 <p>Define a Resnet block</p>
 
@@ -431,7 +429,7 @@ that has the same size as the input.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UnetGenerator" class="doc_header"><code>class</code> <code>UnetGenerator</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UnetGenerator</code>(<strong><code>input_nc</code></strong>, <strong><code>output_nc</code></strong>, <strong><code>num_downs</code></strong>, <strong><code>ngf</code></strong>=<em><code>64</code></em>, <strong><code>norm_layer</code></strong>=<em><code>'BatchNorm2d'</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>) :: <code>Module</code></p>
+<h2 id="UnetGenerator" class="doc_header"><code>class</code> <code>UnetGenerator</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L443" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UnetGenerator</code>(<strong><code>input_nc</code></strong>, <strong><code>output_nc</code></strong>, <strong><code>num_downs</code></strong>, <strong><code>ngf</code></strong>=<em><code>64</code></em>, <strong><code>norm_layer</code></strong>=<em><code>BatchNorm2d</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Create a Unet-based generator</p>
 
@@ -456,7 +454,7 @@ that has the same size as the input.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UnetSkipConnectionBlock" class="doc_header"><code>class</code> <code>UnetSkipConnectionBlock</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UnetSkipConnectionBlock</code>(<strong><code>outer_nc</code></strong>, <strong><code>inner_nc</code></strong>, <strong><code>input_nc</code></strong>=<em><code>None</code></em>, <strong><code>submodule</code></strong>=<em><code>None</code></em>, <strong><code>outermost</code></strong>=<em><code>False</code></em>, <strong><code>innermost</code></strong>=<em><code>False</code></em>, <strong><code>norm_layer</code></strong>=<em><code>'BatchNorm2d'</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>) :: <code>Module</code></p>
+<h2 id="UnetSkipConnectionBlock" class="doc_header"><code>class</code> <code>UnetSkipConnectionBlock</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L475" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UnetSkipConnectionBlock</code>(<strong><code>outer_nc</code></strong>, <strong><code>inner_nc</code></strong>, <strong><code>input_nc</code></strong>=<em><code>None</code></em>, <strong><code>submodule</code></strong>=<em><code>None</code></em>, <strong><code>outermost</code></strong>=<em><code>False</code></em>, <strong><code>innermost</code></strong>=<em><code>False</code></em>, <strong><code>norm_layer</code></strong>=<em><code>BatchNorm2d</code></em>, <strong><code>use_dropout</code></strong>=<em><code>False</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Defines the Unet submodule with skip connection.
 X -------------------identity----------------------
@@ -483,7 +481,7 @@ X -------------------identity----------------------
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="NLayerDiscriminator" class="doc_header"><code>class</code> <code>NLayerDiscriminator</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>NLayerDiscriminator</code>(<strong><code>input_nc</code></strong>, <strong><code>ndf</code></strong>=<em><code>64</code></em>, <strong><code>n_layers</code></strong>=<em><code>3</code></em>, <strong><code>norm_layer</code></strong>=<em><code>'BatchNorm2d'</code></em>) :: <code>Module</code></p>
+<h2 id="NLayerDiscriminator" class="doc_header"><code>class</code> <code>NLayerDiscriminator</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L545" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>NLayerDiscriminator</code>(<strong><code>input_nc</code></strong>, <strong><code>ndf</code></strong>=<em><code>64</code></em>, <strong><code>n_layers</code></strong>=<em><code>3</code></em>, <strong><code>norm_layer</code></strong>=<em><code>BatchNorm2d</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Defines a PatchGAN discriminator</p>
 
@@ -508,7 +506,7 @@ X -------------------identity----------------------
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="PixelDiscriminator" class="doc_header"><code>class</code> <code>PixelDiscriminator</code><a href="" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PixelDiscriminator</code>(<strong><code>input_nc</code></strong>, <strong><code>ndf</code></strong>=<em><code>64</code></em>, <strong><code>norm_layer</code></strong>=<em><code>'BatchNorm2d'</code></em>) :: <code>Module</code></p>
+<h2 id="PixelDiscriminator" class="doc_header"><code>class</code> <code>PixelDiscriminator</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/junyanz.py#L593" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>PixelDiscriminator</code>(<strong><code>input_nc</code></strong>, <strong><code>ndf</code></strong>=<em><code>64</code></em>, <strong><code>norm_layer</code></strong>=<em><code>BatchNorm2d</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Defines a 1x1 PatchGAN discriminator (pixelGAN)</p>
 
@@ -518,6 +516,13 @@ X -------------------identity----------------------
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
