@@ -53,7 +53,8 @@ index = {"convT_norm_relu": "01_models.cyclegan.ipynb",
          "BasicBlock_Ganilla": "09_models.ganilla.ipynb",
          "PyramidFeatures": "09_models.ganilla.ipynb",
          "ResNet": "09_models.ganilla.ipynb",
-         "ganilla_generator": "09_models.ganilla.ipynb"}
+         "ganilla_generator": "09_models.ganilla.ipynb",
+         "GANILLA": "09_models.ganilla.ipynb"}
 
 modules = ["models/cyclegan.py",
            "models/junyanz.py",

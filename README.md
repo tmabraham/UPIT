@@ -2,7 +2,7 @@
 > A fastai/PyTorch package for unpaired image-to-image translation currently with CycleGAN implementation.
 
 
-This is a package for training and testing unpaired image-to-image translation models. It currently only includes the [CycleGAN model](https://junyanz.github.io/CycleGAN/), but other models will be implemented in the future. 
+This is a package for training and testing unpaired image-to-image translation models. It currently only includes the [CycleGAN](https://junyanz.github.io/CycleGAN/), [DualGAN](https://arxiv.org/abs/1704.02510), and [GANILLA](https://arxiv.org/abs/2002.05638) models, but other models will be implemented in the future. 
 
 This package uses [fastai](https://github.com/fastai/fastai) to accelerate deep learning experimentation. Additionally, [nbdev](https://github.com/fastai/nbdev) was used to develop the package and produce documentation based on a series of notebooks.
 
@@ -25,3 +25,4 @@ cycle_gan = CycleGAN(3,3,64)
 learn = cycle_learner(dls, cycle_gan,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
 learn.fit_flat_lin(100,100,2e-4)
 ```
+     
