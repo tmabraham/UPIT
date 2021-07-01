@@ -45,3 +45,16 @@ learn.fit_flat_lin(100,100,2e-4)
 ```
 
 Additionally, we provide metrics for quantitative evaluation of the models, as well as experiment tracking with Weights and Biases. Check the [documentation](https://tmabraham.github.io/UPIT) for more information!
+
+## Citing UPIT
+If you use UPIT in your research please use the following BibTeX entry:
+
+```
+@Misc{UPIT,
+    author =       {Tanishq Mathew Abraham},
+    title =        {UPIT - A fastai/PyTorch package for unpaired image-to-image translation.},
+    howpublished = {Github},
+    year =         {2021},
+    url =          {https://github.com/tmabraham/UPIT}
+}
+```
