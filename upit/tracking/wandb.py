@@ -40,7 +40,6 @@ def log_dataset(main_path, folder_names=None, name=None, metadata={}, descriptio
         if p.is_dir():
             if p.name in folder_names and p.name != 'models': artifact_dataset.add_dir(str(p.resolve()), name=p.name)
         else: artifact_dataset.add_file(str(p.resolve()))
-    print(artifact_dataset)
     wandb.run.use_artifact(artifact_dataset)
 
 # Cell
@@ -94,7 +93,7 @@ class UPITWandbCallback(Callback):
             if self.folder_names:
                 assert isinstance(self.folder_names, list), 'folder_names must be a list of folder names as strings'
                 for name in self.folder_names: assert isinstance(name, str), 'the elements of folder_names must be strings'
-            log_dataset(main_path=self.log_dataset, name=self.dataset_name, metadata=metadata)
+            log_dataset(main_path=self.log_dataset, folder_names=self.folder_names, name=self.dataset_name, metadata=metadata)
 
 
         # log model
