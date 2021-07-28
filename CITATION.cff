@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Abraham"
+  given-names: "Tanishq Mathew"
+title: "UPIT - A fastai/PyTorch package for unpaired image-to-image translation."
+date-released: 2021
+url: "https://github.com/tmabraham/UPIT"
