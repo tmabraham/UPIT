@@ -15,8 +15,7 @@ class RandPair(Transform):
     def encodes(self,i): return random.choice(self.itemsB)
 
 # Cell
-#GET RID OF THIS
-def get_dls(pathA, pathB, num_A=None, num_B=None, load_size=512, crop_size=256, bs=4, num_workers=2):
+def get_dls(pathA, pathB, num_A=None, num_B=None, load_size=512, crop_size=256, item_tfms=None, batch_tfms=None, bs=4, num_workers=2):
     """
     Given image files from two domains (`pathA`, `pathB`), create `DataLoaders` object.
     Loading and randomly cropped sizes of `load_size` and `crop_size` are set to defaults of 512 and 256.
@@ -27,10 +26,13 @@ def get_dls(pathA, pathB, num_A=None, num_B=None, load_size=512, crop_size=256, 
     filesA = filesA[:min(ifnone(num_A, len(filesA)),len(filesA))]
     filesB = filesB[:min(ifnone(num_B, len(filesB)),len(filesB))]
 
-    dsets = Datasets(filesA, tfms=[[PILImage.create, ToTensor, Resize(load_size),RandomCrop(crop_size)],
-                                   [RandPair(filesB),PILImage.create, ToTensor, Resize(load_size),RandomCrop(crop_size)]], splits=None)
+    if item_tfms is None: item_tfms = [Resize(load_size), RandomCrop(crop_size)]
 
-    batch_tfms = [IntToFloatTensor, Normalize.from_stats(mean=0.5, std=0.5), FlipItem(p=0.5)]
+    dsets = Datasets(filesA, tfms=[[PILImage.create, ToTensor, *item_tfms],
+                                   [RandPair(filesB),PILImage.create, ToTensor, *item_tfms]], splits=None)
+
+    if batch_tfms is None: batch_tfms = [IntToFloatTensor, Normalize.from_stats(mean=0.5, std=0.5), FlipItem(p=0.5)]
+
     dls = dsets.dataloaders(bs=bs, num_workers=num_workers, after_batch=batch_tfms)
 
     return dls
