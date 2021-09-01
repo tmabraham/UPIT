@@ -2,11 +2,13 @@
 
 title: CycleGAN model
 
+
 keywords: fastai
 sidebar: home_sidebar
 
 summary: "Defines the CycleGAN model architecture."
 description: "Defines the CycleGAN model architecture."
+nb_path: "nbs/01_models.cyclegan.ipynb"
 ---
 <!--
 
@@ -96,7 +98,7 @@ description: "Defines the CycleGAN model architecture."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="pad_conv_norm_relu" class="doc_header"><code>pad_conv_norm_relu</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/cyclegan.py#L18" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>pad_conv_norm_relu</code>(<strong><code>ch_in</code></strong>:<code>int</code>, <strong><code>ch_out</code></strong>:<code>int</code>, <strong><code>pad_mode</code></strong>:<code>str</code>, <strong><code>norm_layer</code></strong>:<code>Module</code>, <strong><code>ks</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>bias</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>pad</code></strong>=<em><code>1</code></em>, <strong><code>stride</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>activ</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>init</code></strong>=<em><code>'kaiming_normal_'</code></em>, <strong><code>init_gain</code></strong>:<code>int</code>=<em><code>0.02</code></em>)</p>
+<h3 id="pad_conv_norm_relu" class="doc_header"><code>pad_conv_norm_relu</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/cyclegan.py#L18" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>pad_conv_norm_relu</code>(<strong><code>ch_in</code></strong>:<code>int</code>, <strong><code>ch_out</code></strong>:<code>int</code>, <strong><code>pad_mode</code></strong>:<code>str</code>, <strong><code>norm_layer</code></strong>:<code>Module</code>, <strong><code>ks</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>bias</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>pad</code></strong>=<em><code>1</code></em>, <strong><code>stride</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>activ</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>init</code></strong>=<em><code>kaiming_normal_</code></em>, <strong><code>init_gain</code></strong>:<code>int</code>=<em><code>0.02</code></em>)</p>
 </blockquote>
 
 </div>
@@ -298,13 +300,6 @@ description: "Defines the CycleGAN model architecture."
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -322,6 +317,13 @@ description: "Defines the CycleGAN model architecture."
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -383,7 +385,7 @@ description: "Defines the CycleGAN model architecture."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="conv_norm_lr" class="doc_header"><code>conv_norm_lr</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/cyclegan.py#L75" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>conv_norm_lr</code>(<strong><code>ch_in</code></strong>:<code>int</code>, <strong><code>ch_out</code></strong>:<code>int</code>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>, <strong><code>ks</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>bias</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>pad</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>stride</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>activ</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>slope</code></strong>:<code>float</code>=<em><code>0.2</code></em>, <strong><code>init</code></strong>=<em><code>'normal_'</code></em>, <strong><code>init_gain</code></strong>:<code>int</code>=<em><code>0.02</code></em>)</p>
+<h3 id="conv_norm_lr" class="doc_header"><code>conv_norm_lr</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/cyclegan.py#L75" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>conv_norm_lr</code>(<strong><code>ch_in</code></strong>:<code>int</code>, <strong><code>ch_out</code></strong>:<code>int</code>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>, <strong><code>ks</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>bias</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>pad</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>stride</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>activ</code></strong>:<code>bool</code>=<em><code>True</code></em>, <strong><code>slope</code></strong>:<code>float</code>=<em><code>0.2</code></em>, <strong><code>init</code></strong>=<em><code>normal_</code></em>, <strong><code>init_gain</code></strong>:<code>int</code>=<em><code>0.02</code></em>)</p>
 </blockquote>
 
 </div>
