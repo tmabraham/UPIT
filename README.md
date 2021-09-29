@@ -18,8 +18,11 @@ The package uses torch 1.7.1, torchvision 0.8.2, and fastai 2.3.0 (and its depen
 
 Training a CycleGAN model is easy with UPIT! Given the paths of the images from the two domains `trainA_path` and `trainB_path`, you can do the following:
 
-```
+```python
 #cuda
+from upit.data.unpaired import *
+from upit.models.cyclegan import *
+from upit.train.cyclegan import *
 dls = get_dls(trainA_path, trainB_path)
 cycle_gan = CycleGAN(3,3,64)
 learn = cycle_learner(dls, cycle_gan,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
@@ -28,8 +31,9 @@ learn.fit_flat_lin(100,100,2e-4)
 
 The GANILLA model is only a different generator model architecture (that's meant to strike a better balance between style and content), so the same `cycle_learner` class can be used.
 
-```
+```python
 #cuda
+from upit.models.ganilla import *
 ganilla = GANILLA(3,3,64)
 learn = cycle_learner(dls, ganilla,opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
 learn.fit_flat_lin(100,100,2e-4)
@@ -37,10 +41,12 @@ learn.fit_flat_lin(100,100,2e-4)
 
 Finally, we provide separate functions/classes for `DualGAN` model and training:
 
-```
+```python
 #cuda
+from upit.models.dualgan import *
+from upit.train.dualgan import *
 dual_gan = DualGAN(3,64,3)
-learn = cycle_learner(dls, dual_gan, opt_func=RMSProp)
+learn = dual_learner(dls, dual_gan, opt_func=RMSProp)
 learn.fit_flat_lin(100,100,2e-4)
 ```
 
