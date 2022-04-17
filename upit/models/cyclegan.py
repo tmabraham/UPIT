@@ -8,6 +8,7 @@ from fastai.vision.all import *
 from fastai.basics import *
 from typing import List
 from fastai.vision.gan import *
+from huggingface_hub import PyTorchModelHubMixin
 
 # Cell
 def convT_norm_relu(ch_in:int, ch_out:int, norm_layer:nn.Module, ks:int=3, stride:int=2, bias:bool=True):
@@ -102,7 +103,7 @@ def discriminator(ch_in:int, n_ftrs:int=64, n_layers:int=3, norm_layer:nn.Module
     return nn.Sequential(*layers)
 
 # Cell
-class CycleGAN(nn.Module):
+class CycleGAN(nn.Module, PyTorchModelHubMixin):
     """
     CycleGAN model. \n
     When called, takes in input batch of real images from both domains and outputs fake images for the opposite domains (with the generators).

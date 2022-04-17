@@ -2,6 +2,7 @@
 *.tif
 *.pth
 *.zip
+*.bin
 data/
 horse2zebra/
 ignore/
