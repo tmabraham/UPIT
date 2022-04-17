@@ -8,6 +8,7 @@ from fastai.basics import *
 from typing import List
 from fastai.vision.gan import *
 from .cyclegan import *
+from huggingface_hub import PyTorchModelHubMixin
 
 # Cell
 class BasicBlock_Ganilla(nn.Module):
@@ -231,7 +232,7 @@ def ganilla_generator(input_nc, output_nc, ngf, drop, fpn_weights=[1.0, 1.0, 1.0
     return model
 
 # Cell
-class GANILLA(nn.Module):
+class GANILLA(nn.Module, PyTorchModelHubMixin):
     """
     GANILLA model. \n
     When called, takes in input batch of real images from both domains and outputs fake images for the opposite domains (with the generators).

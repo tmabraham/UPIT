@@ -8,6 +8,7 @@ from fastai.basics import *
 from typing import List
 from fastai.vision.gan import *
 from .cyclegan import *
+from huggingface_hub import PyTorchModelHubMixin
 
 # Cell
 def weights_init_normal(m):
@@ -96,7 +97,7 @@ class DualGANGenerator(nn.Module):
         return self.final(u6)
 
 # Cell
-class DualGAN(nn.Module):
+class DualGAN(nn.Module, PyTorchModelHubMixin):
     """
     DualGAN model. \n
     When called, takes in input batch of real images from both domains and outputs fake images for the opposite domains (with the generators).

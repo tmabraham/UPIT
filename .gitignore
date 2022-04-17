@@ -2,12 +2,14 @@
 *.tif
 *.pth
 *.zip
+*.bin
 data/
 horse2zebra/
 ignore/
 test/
 
 nbs/wandb/
+nbs/upit*
 examples/wandb/
 examples/*_private.ipynb
 
