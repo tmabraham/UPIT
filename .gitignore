@@ -9,6 +9,7 @@ ignore/
 test/
 
 nbs/wandb/
+nbs/upit*
 examples/wandb/
 examples/*_private.ipynb
 
