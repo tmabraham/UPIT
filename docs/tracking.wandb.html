@@ -26,20 +26,6 @@ nb_path: "nbs/06_tracking.wandb.ipynb"
     
 <div class="cell border-box-sizing code_cell rendered">
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2021-09-01 20:21:27.924844: I tensorflow/stream_executor/platform/default/dso_loader.cc:48] Successfully opened dynamic library libcudart.so.10.1
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
     {% endraw %}
 
@@ -194,14 +180,12 @@ nb_path: "nbs/06_tracking.wandb.ipynb"
 
 
 <div class="output_html rendered_html output_subarea ">
-
                 Tracking run with wandb version 0.12.1<br/>
                 Syncing run <strong style="color:#cdcd00">polished-yogurt-6</strong> to <a href="https://wandb.ai" target="_blank">Weights & Biases</a> <a href="https://docs.wandb.com/integrations/jupyter.html" target="_blank">(Documentation)</a>.<br/>
                 Project page: <a href="https://wandb.ai/tmabraham/spell-nbs" target="_blank">https://wandb.ai/tmabraham/spell-nbs</a><br/>
                 Run page: <a href="https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw" target="_blank">https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw</a><br/>
                 Run data is saved locally in <code>/spell/nbs/wandb/run-20210901_201422-124u5axw</code><br/><br/>
-            
-</div>
+            </div>
 
 </div>
 
@@ -226,8 +210,7 @@ Saving training set predictions
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
+<div class="output_html rendered_html output_subarea "><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: left;">
       <th>epoch</th>
@@ -274,8 +257,7 @@ Saving training set predictions
       <td>02:25</td>
     </tr>
   </tbody>
-</table>
-</div>
+</table></div>
 
 </div>
 
@@ -299,9 +281,57 @@ Saving training set predictions
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-<br/>Waiting for W&B process to finish, PID 3195<br/>Program ended successfully.
+<div class="output_html rendered_html output_subarea "><br/>Waiting for W&B process to finish, PID 3195<br/>Program ended successfully.</div>
+
 </div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">Find user logs for this run at: <code>/spell/nbs/wandb/run-20210901_201422-124u5axw/logs/debug.log</code></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">Find internal logs for this run at: <code>/spell/nbs/wandb/run-20210901_201422-124u5axw/logs/debug-internal.log</code></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><h3>Run summary:</h3><br/><style>
+    table.wandb td:nth-child(1) { padding: 0 10px; text-align: right }
+    </style><table class="wandb">
+<tr><td>epoch</td><td>2</td></tr><tr><td>train_loss</td><td>8.8876</td></tr><tr><td>raw_loss</td><td>6.48146</td></tr><tr><td>wd_0</td><td>0.01</td></tr><tr><td>sqr_mom_0</td><td>0.999</td></tr><tr><td>lr_0</td><td>1e-05</td></tr><tr><td>mom_0</td><td>0.5</td></tr><tr><td>eps_0</td><td>1e-05</td></tr><tr><td>_runtime</td><td>303</td></tr><tr><td>_timestamp</td><td>1630527565</td></tr><tr><td>_step</td><td>49</td></tr><tr><td>id_loss_A</td><td>1.20184</td></tr><tr><td>id_loss_B</td><td>1.20619</td></tr><tr><td>gen_loss_A</td><td>0.29746</td></tr><tr><td>gen_loss_B</td><td>0.31819</td></tr><tr><td>cyc_loss_A</td><td>2.53387</td></tr><tr><td>cyc_loss_B</td><td>2.61199</td></tr><tr><td>D_A_loss</td><td>0.25366</td></tr><tr><td>D_B_loss</td><td>0.27066</td></tr><tr><td>frechet_inception_distance</td><td>90.61617</td></tr></table></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "><h3>Run history:</h3><br/><style>
+    table.wandb td:nth-child(1) { padding: 0 10px; text-align: right }
+    </style><table class="wandb">
+<tr><td>epoch</td><td>▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███</td></tr><tr><td>train_loss</td><td>█▇▆▅▄▄▄▄▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁</td></tr><tr><td>raw_loss</td><td>█▆▅▄▄▃▄▄▃▃▂▄▃▂▃▃▃▂▃▄▃▂▃▃▂▂▂▂▂▂▄▂▂▂▁▂▂▁▂▁</td></tr><tr><td>wd_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>sqr_mom_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>lr_0</td><td>██████████████████████▇▇▇▆▆▆▅▅▅▄▄▃▃▃▂▂▂▁</td></tr><tr><td>mom_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>eps_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>_runtime</td><td>▁▁▁▁▂▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▅▅▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇█</td></tr><tr><td>_timestamp</td><td>▁▁▁▁▂▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▅▅▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇█</td></tr><tr><td>_step</td><td>▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███</td></tr><tr><td>id_loss_A</td><td>█▁</td></tr><tr><td>id_loss_B</td><td>█▁</td></tr><tr><td>gen_loss_A</td><td>█▁</td></tr><tr><td>gen_loss_B</td><td>█▁</td></tr><tr><td>cyc_loss_A</td><td>█▁</td></tr><tr><td>cyc_loss_B</td><td>█▁</td></tr><tr><td>D_A_loss</td><td>█▁</td></tr><tr><td>D_B_loss</td><td>█▁</td></tr><tr><td>frechet_inception_distance</td><td>█▁</td></tr></table><br/></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">Synced 6 W&B file(s), 0 media file(s), 1 artifact file(s) and 1 other file(s)</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+                    <br/>Synced <strong style="color:#cdcd00">polished-yogurt-6</strong>: <a href="https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw" target="_blank">https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw</a><br/>
+                </div>
 
 </div>
 
@@ -312,5 +342,5 @@ Saving training set predictions
     {% endraw %}
 
 </div>
- 
+
 

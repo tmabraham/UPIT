@@ -60,7 +60,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="weights_init_normal" class="doc_header"><code>weights_init_normal</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L13" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>weights_init_normal</code>(<strong><code>m</code></strong>)</p>
+<h4 id="weights_init_normal" class="doc_header"><code>weights_init_normal</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L14" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>weights_init_normal</code>(<strong><code>m</code></strong>)</p>
 </blockquote>
 
 </div>
@@ -91,7 +91,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UNetUp" class="doc_header"><code>class</code> <code>UNetUp</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L38" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNetUp</code>(<strong><code>in_size</code></strong>, <strong><code>out_size</code></strong>, <strong><code>dropout</code></strong>=<em><code>0.0</code></em>) :: <code>Module</code></p>
+<h2 id="UNetUp" class="doc_header"><code>class</code> <code>UNetUp</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L39" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNetUp</code>(<strong><code>in_size</code></strong>, <strong><code>out_size</code></strong>, <strong><code>dropout</code></strong>=<em><code>0.0</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Expanding layers of the Unet used in DualGAN</p>
 
@@ -123,7 +123,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="UNetDown" class="doc_header"><code>class</code> <code>UNetDown</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L22" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>UNetDown</code>(<strong><code>in_size</code></strong>, <strong><code>out_size</code></strong>, <strong><code>normalize</code></strong>=<em><code>True</code></em>, <strong><code>dropout</code></strong>=<em><code>0.0</code></em>) :: <code>Module</code></p>
+<h3 id="UNetDown" class="doc_header"><code>class</code> <code>UNetDown</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L23" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>UNetDown</code>(<strong><code>in_size</code></strong>, <strong><code>out_size</code></strong>, <strong><code>normalize</code></strong>=<em><code>True</code></em>, <strong><code>dropout</code></strong>=<em><code>0.0</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Contracting layers of the Unet used in DualGAN</p>
 
@@ -155,7 +155,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="DualGANGenerator" class="doc_header"><code>class</code> <code>DualGANGenerator</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L59" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>DualGANGenerator</code>(<strong><code>channels</code></strong>=<em><code>3</code></em>) :: <code>Module</code></p>
+<h3 id="DualGANGenerator" class="doc_header"><code>class</code> <code>DualGANGenerator</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L60" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>DualGANGenerator</code>(<strong><code>channels</code></strong>=<em><code>3</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Generator model for the DualGAN</p>
 
@@ -327,7 +327,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="DualGAN" class="doc_header"><code>class</code> <code>DualGAN</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L99" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>DualGAN</code>(<strong><code>ch_in</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_features</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>disc_layers</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>lsgan</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>drop</code></strong>:<code>float</code>=<em><code>0.0</code></em>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>) :: <code>Module</code></p>
+<h3 id="DualGAN" class="doc_header"><code>class</code> <code>DualGAN</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L100" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>DualGAN</code>(<strong><code>ch_in</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_features</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>disc_layers</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>lsgan</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>drop</code></strong>:<code>float</code>=<em><code>0.0</code></em>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>DualGAN model.</p>
 <p>When called, takes in input batch of real images from both domains and outputs fake images for the opposite domains (with the generators).</p>
@@ -358,7 +358,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="DualGAN.__init__" class="doc_header"><code>DualGAN.__init__</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L110" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DualGAN.__init__</code>(<strong><code>ch_in</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_features</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>disc_layers</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>lsgan</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>drop</code></strong>:<code>float</code>=<em><code>0.0</code></em>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>)</p>
+<h4 id="DualGAN.__init__" class="doc_header"><code>DualGAN.__init__</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L111" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DualGAN.__init__</code>(<strong><code>ch_in</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_features</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>disc_layers</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>lsgan</code></strong>:<code>bool</code>=<em><code>False</code></em>, <strong><code>drop</code></strong>:<code>float</code>=<em><code>0.0</code></em>, <strong><code>norm_layer</code></strong>:<code>Module</code>=<em><code>None</code></em>)</p>
 </blockquote>
 <p>Constructor for DualGAN model.</p>
 <p>Arguments:</p>
@@ -389,7 +389,7 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="DualGAN.forward" class="doc_header"><code>DualGAN.forward</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L134" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DualGAN.forward</code>(<strong><code>input</code></strong>)</p>
+<h4 id="DualGAN.forward" class="doc_header"><code>DualGAN.forward</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/models/dualgan.py#L135" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DualGAN.forward</code>(<strong><code>input</code></strong>)</p>
 </blockquote>
 <p>Forward function for DualGAN model. The input is a tuple of a batch of real images from both domains A and B.</p>
 
@@ -450,8 +450,8 @@ nb_path: "nbs/07_models.dualgan.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>CPU times: user 5.03 s, sys: 252 ms, total: 5.28 s
-Wall time: 5.28 s
+<pre>CPU times: user 18.9 s, sys: 1.57 s, total: 20.5 s
+Wall time: 447 ms
 </pre>
 </div>
 </div>
@@ -481,6 +481,68 @@ Wall time: 5.28 s
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dualgan_model</span><span class="o">.</span><span class="n">push_to_hub</span><span class="p">(</span><span class="s1">&#39;upit-dualgan-test&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
 </div>
- 
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Cloning https://huggingface.co/tmabraham/upit-dualgan-test into local empty directory.
+To https://huggingface.co/tmabraham/upit-dualgan-test
+   dccaa0f..f8d92db  main -&gt; main
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;https://huggingface.co/tmabraham/upit-dualgan-test/commit/f8d92db7854429ca64335e9ab698d7e7f2f44feb&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#hide_output</span>
+<span class="n">dualgan_model</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;tmabraham/upit-dualgan-test&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+</div>
+
 

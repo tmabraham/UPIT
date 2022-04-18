@@ -69,7 +69,7 @@ nb_path: "nbs/04_inference.cyclegan.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="FolderDataset" class="doc_header"><code>class</code> <code>FolderDataset</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L19" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>FolderDataset</code>(<strong>*<code>args</code></strong>, <strong>**<code>kwds</code></strong>) :: <code>Dataset</code></p>
+<h3 id="FolderDataset" class="doc_header"><code>class</code> <code>FolderDataset</code><a href="https://github.com/tmabraham/UPIT/tree/master/upit/inference/cyclegan.py#L19" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>FolderDataset</code>(<strong><code>path</code></strong>, <strong><code>transforms</code></strong>=<em><code>None</code></em>) :: <code>Dataset</code></p>
 </blockquote>
 <p>A PyTorch Dataset class that can be created from a folder <code>path</code> of images, for the sole purpose of inference. Optional <code>transforms</code>
 can be provided.</p>
@@ -183,7 +183,6 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
 
 
 <div class="output_html rendered_html output_subarea ">
-
     <div>
         <style>
             /* Turns off some styling */
@@ -200,8 +199,7 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
       <progress value='116875264' class='' max='116867962' style='width:300px; height:20px; vertical-align: middle;'></progress>
       100.01% [116875264/116867962 00:22<00:00]
     </div>
-    
-</div>
+    </div>
 
 </div>
 
@@ -306,7 +304,6 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
 
 
 <div class="output_html rendered_html output_subarea ">
-
     <div>
         <style>
             /* Turns off some styling */
@@ -323,8 +320,7 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
       <progress value='120' class='' max='120' style='width:300px; height:20px; vertical-align: middle;'></progress>
       100.00% [120/120 00:48<00:00]
     </div>
-    
-</div>
+    </div>
 
 </div>
 
@@ -356,7 +352,6 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
 
 
 <div class="output_html rendered_html output_subarea ">
-
     <div>
         <style>
             /* Turns off some styling */
@@ -373,8 +368,7 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
       <progress value='30' class='' max='30' style='width:300px; height:20px; vertical-align: middle;'></progress>
       100.00% [30/30 00:10<00:00]
     </div>
-    
-</div>
+    </div>
 
 </div>
 
@@ -476,7 +470,6 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
 
 
 <div class="output_html rendered_html output_subarea ">
-
     <div>
         <style>
             /* Turns off some styling */
@@ -493,8 +486,7 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
       <progress value='35' class='' max='35' style='width:300px; height:20px; vertical-align: middle;'></progress>
       100.00% [35/35 00:09<00:00]
     </div>
-    
-</div>
+    </div>
 
 </div>
 
@@ -632,5 +624,5 @@ to run inference on (default='cuda') and suffix of the prediction images <code>s
     {% endraw %}
 
 </div>
- 
+
 
