@@ -14,8 +14,10 @@ if __name__ == "__main__":
     parser.add_argument('--epochs_flat', type=int, default=100, help='Number of epochs with flat LR')
     parser.add_argument('--epochs_decay', type=int, default=100, help='Number of epochs with linear decay of LR')
     parser.add_argument('--lr', type=float, default=0.0002, help='Learning rate')
+    parser.add_argument('--gpu', type=int, default=0, help='GPU ID')
     args = parser.parse_args()
 
+    torch.cuda.set_device(args.gpu)
     dls = get_dls_from_hf("huggan/horse2zebra", load_size=286)
     if args.model_name == 'cyclegan': 
         cycle_gan = CycleGAN()
