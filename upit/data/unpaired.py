@@ -90,7 +90,7 @@ def create_image(x): return PILImage(x)
 def get_dls_from_hf(dataset_name, fieldA='imageA', fieldB='imageB', num_A=None, num_B=None, load_size=512, crop_size=256, item_tfms=None, batch_tfms=None, bs=4, num_workers=2, normalize=False):
     """
     Given a name of a dataset available on the HuggingFace Hub, create `DataLoaders` object.
-    Expects the field names to be "imageA" and "imageB".
+    Field names given in `fieldA` and `fieldB` arguments.
     Loading and randomly cropped sizes of `load_size` and `crop_size` are set to defaults of 512 and 256.
     Batch size is specified by `bs` (default=4).
     """
