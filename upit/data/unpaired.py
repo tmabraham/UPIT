@@ -87,7 +87,7 @@ def get_dls(pathA, pathB, num_A=None, num_B=None, load_size=512, crop_size=256, 
 def convert_func(x): return x.convert(mode='RGB')
 def create_image(x): return PILImage(x)
 
-def get_dls_from_hf(dataset_name, num_A=None, num_B=None, load_size=512, crop_size=256, item_tfms=None, batch_tfms=None, bs=4, num_workers=2, normalize=False):
+def get_dls_from_hf(dataset_name, fieldA='imageA', fieldB='imageB', num_A=None, num_B=None, load_size=512, crop_size=256, item_tfms=None, batch_tfms=None, bs=4, num_workers=2, normalize=False):
     """
     Given a name of a dataset available on the HuggingFace Hub, create `DataLoaders` object.
     Expects the field names to be "imageA" and "imageB".
@@ -96,8 +96,8 @@ def get_dls_from_hf(dataset_name, num_A=None, num_B=None, load_size=512, crop_si
     """
 
     dataset = load_dataset(dataset_name)
-    imagesA = dataset['train']['imageA']
-    imagesB = dataset['train']['imageB']
+    imagesA = dataset['train'][fieldA]
+    imagesB = dataset['train'][fieldB]
 
     imagesA = imagesA[:min(ifnone(num_A, len(imagesA)),len(imagesA))]
     imagesB = imagesB[:min(ifnone(num_B, len(imagesB)),len(imagesB))]
