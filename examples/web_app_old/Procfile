@@ -1,0 +1,1 @@
+web: source setup.sh && python cyclegan_inference.py
