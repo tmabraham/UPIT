@@ -9,8 +9,13 @@ import argparse
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment_name', type=str, default='horse2zebra')
+    parser.add_argument('--dataset_name', type=str, default='huggan/horse2zebra')
     parser.add_argument('--model_name', type=str, default='cyclegan', choices=['cyclegan', 'dualgan','ganilla'])
+    parser.add_argument('--fieldA', type=str, default='imageA', help='Name of the column for domain A in dataset')
+    parser.add_argument('--fieldB', type=str, default='imageB', help='Name of the column for domain B in dataset')
     parser.add_argument('--batch_size', type=int, default=1, help='Batch size')
+    parser.add_argument('--load_size', type=int, default=286, help='Load size')
+    parser.add_argunent('--crop_size', type=int, default=256, help='Crop size')
     parser.add_argument('--epochs_flat', type=int, default=100, help='Number of epochs with flat LR')
     parser.add_argument('--epochs_decay', type=int, default=100, help='Number of epochs with linear decay of LR')
     parser.add_argument('--lr', type=float, default=0.0002, help='Learning rate')
@@ -18,7 +23,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     torch.cuda.set_device(args.gpu)
-    dls = get_dls_from_hf("huggan/horse2zebra", load_size=286, bs=args.batch_size)
+    dls = get_dls_from_hf(args.dataset_name, fieldA=args.fieldA, fieldB=args.fieldB, load_size=args.load_size, crop_size=args.crop_size, bs=args.batch_size)
     if args.model_name == 'cyclegan': 
         cycle_gan = CycleGAN()
         learn = cycle_learner(dls, cycle_gan, opt_func=partial(Adam,mom=0.5,sqr_mom=0.999))
