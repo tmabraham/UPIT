@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument('--fieldB', type=str, default='imageB', help='Name of the column for domain B in dataset')
     parser.add_argument('--batch_size', type=int, default=1, help='Batch size')
     parser.add_argument('--load_size', type=int, default=286, help='Load size')
-    parser.add_argunent('--crop_size', type=int, default=256, help='Crop size')
+    parser.add_argument('--crop_size', type=int, default=256, help='Crop size')
     parser.add_argument('--epochs_flat', type=int, default=100, help='Number of epochs with flat LR')
     parser.add_argument('--epochs_decay', type=int, default=100, help='Number of epochs with linear decay of LR')
     parser.add_argument('--lr', type=float, default=0.0002, help='Learning rate')
