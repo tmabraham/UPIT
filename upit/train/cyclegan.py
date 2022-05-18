@@ -55,14 +55,14 @@ class CycleGANLoss(nn.Module):
         store_attr()
         self.crit = self._create_gan_loss(F.mse_loss if self.lsgan else F.binary_cross_entropy)
 
-    def set_input(self, input): "set `self.real_A` and `self.real_B` for future loss calculation"; self.real_A,self.real_B = input
+    def set_input(self, input): "set `self.real_A` and `self.real_B` for future loss calculation"; self.real_A,self.real_B = tuple(map(TensorBase,input))
 
     def forward(self, output, target):
         """
         Forward function of the CycleGAN loss function. The generated images are passed in as output (which comes from the model)
         and the generator loss is returned.
         """
-        fake_A, fake_B, idt_A, idt_B = output
+        fake_A, fake_B, idt_A, idt_B = tuple(map(TensorBase,output))
         #Generators should return identity on the datasets they try to convert to
         self.id_loss_A = self.l_idt * self.l_A * F.l1_loss(idt_A, self.real_A)
         self.id_loss_B = self.l_idt * self.l_B * F.l1_loss(idt_B, self.real_B)
@@ -117,8 +117,9 @@ class CycleGANTrainer(Callback):
         "Discriminator training loop"
         if self._training:
             # Obtain images
-            fake_A, fake_B = self.learn.pred[0].detach(), self.learn.pred[1].detach()
-            (real_A, real_B), = self.learn.xb
+            fake_A, fake_B = TensorBase(self.learn.pred[0].detach()), TensorBase(self.learn.pred[1].detach())
+            (real_A, real_B), =self.learn.xb
+            real_A, real_B = TensorBase(real_A), TensorBase(real_B)
             self._set_trainable(disc=True)
             # D_A loss calc. and backpropagation
             loss_D_A = 0.5 * (self.crit(self.D_A(real_A), 1) + self.crit(self.D_A(fake_A), 0))
@@ -160,9 +161,9 @@ class ShowImgsCallback(Callback):
     def after_epoch(self):
         "Update images"
         if (self.learn.epoch+1) % self.show_img_interval == 0:
-            if self.imgA: self.imgA_result = torch.cat((self.learn.xb[0][1].detach(),self.learn.pred[0].detach()),dim=-1); self.last_gen=self.imgA_result
-            if self.imgB: self.imgB_result = torch.cat((self.learn.xb[0][0].detach(),self.learn.pred[1].detach()),dim=-1); self.last_gen=self.imgB_result
-            if self.imgA and self.imgB : self.last_gen = torch.cat((self.imgA_result,self.imgB_result),dim=-2)
+            if self.imgA: self.imgA_result = to_concat((TensorBase(self.learn.xb[0][1].detach()),TensorBase(self.learn.pred[0].detach())),dim=-1); self.last_gen=self.imgA_result
+            if self.imgB: self.imgB_result = to_concat((TensorBase(self.learn.xb[0][0].detach()),TensorBase(self.learn.pred[1].detach())),dim=-1); self.last_gen=self.imgB_result
+            if self.imgA and self.imgB : self.last_gen = to_concat((self.imgA_result,self.imgB_result),dim=-2)
             img = TensorImage(self.learn.dls.after_batch.decode(TensorImage(self.last_gen[0]))[0])
             self.imgs.append(img)
             self.titles.append(f'Epoch {self.learn.epoch}')
