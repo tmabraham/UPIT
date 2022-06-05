@@ -153,10 +153,9 @@ nb_path: "nbs/06_tracking.wandb.ipynb"
 <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 <span class="n">cycle_gan</span> <span class="o">=</span> <span class="n">CycleGAN</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">64</span><span class="p">)</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">cycle_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">cycle_gan</span><span class="p">,</span><span class="n">opt_func</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">Adam</span><span class="p">,</span><span class="n">mom</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">sqr_mom</span><span class="o">=</span><span class="mf">0.999</span><span class="p">),</span>
-                    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">FrechetInceptionDistance</span><span class="p">()],</span>
-                    <span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">UPITWandbCallback</span><span class="p">(</span><span class="n">log_preds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_dataset</span><span class="o">=</span><span class="n">horse2zebra</span><span class="p">,</span> <span class="n">folder_names</span><span class="o">=</span><span class="p">[</span><span class="n">trainA_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">trainB_path</span><span class="o">.</span><span class="n">name</span><span class="p">])])</span>
+                    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">FrechetInceptionDistance</span><span class="p">()])</span>
 
-<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_flat_lin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">2e-4</span><span class="p">,</span><span class="n">cbs</span><span class="o">=</span><span class="p">[</span><span class="n">UPITWandbCallback</span><span class="p">(</span><span class="n">log_preds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_dataset</span><span class="o">=</span><span class="n">horse2zebra</span><span class="p">,</span> <span class="n">folder_names</span><span class="o">=</span><span class="p">[</span><span class="n">trainA_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">trainB_path</span><span class="o">.</span><span class="n">name</span><span class="p">])])</span>
 <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
 </pre></div>
 
@@ -170,8 +169,7 @@ nb_path: "nbs/06_tracking.wandb.ipynb"
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre><span class="ansi-blue-intense-fg ansi-bold">wandb</span>: Currently logged in as: <span class="ansi-yellow-fg">tmabraham</span> (use `wandb login --relogin` to force relogin)
-2021-09-01 20:14:23.642203: I tensorflow/stream_executor/platform/default/dso_loader.cc:48] Successfully opened dynamic library libcudart.so.10.1
+<pre><span class="ansi-blue-intense-fg ansi-bold">wandb</span>: Currently logged in as: <span class="ansi-yellow-fg">tmabraham</span>. Use <span class="ansi-bold">`wandb login --relogin`</span> to force relogin
 </pre>
 </div>
 </div>
@@ -179,21 +177,44 @@ nb_path: "nbs/06_tracking.wandb.ipynb"
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">
-                Tracking run with wandb version 0.12.1<br/>
-                Syncing run <strong style="color:#cdcd00">polished-yogurt-6</strong> to <a href="https://wandb.ai" target="_blank">Weights & Biases</a> <a href="https://docs.wandb.com/integrations/jupyter.html" target="_blank">(Documentation)</a>.<br/>
-                Project page: <a href="https://wandb.ai/tmabraham/spell-nbs" target="_blank">https://wandb.ai/tmabraham/spell-nbs</a><br/>
-                Run page: <a href="https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw" target="_blank">https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw</a><br/>
-                Run data is saved locally in <code>/spell/nbs/wandb/run-20210901_201422-124u5axw</code><br/><br/>
-            </div>
+<div class="output_html rendered_html output_subarea ">Tracking run with wandb version 0.12.17</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">Run data is saved locally in <code>/home/tmabraham/UPIT/nbs/wandb/run-20220605_010714-yidpx9j2</code></div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">Syncing run <strong><a href="https://wandb.ai/tmabraham/UPIT-nbs/runs/yidpx9j2" target="_blank">colorful-dragon-27</a></strong> to <a href="https://wandb.ai/tmabraham/UPIT-nbs" target="_blank">Weights & Biases</a> (<a href="https://wandb.me/run" target="_blank">docs</a>)<br/></div>
 
 </div>
 
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre><span class="ansi-blue-intense-fg ansi-bold">wandb</span>: Adding directory to artifact (/root/.fastai/data/horse2zebra/trainA)... Done. 0.2s
-<span class="ansi-blue-intense-fg ansi-bold">wandb</span>: Adding directory to artifact (/root/.fastai/data/horse2zebra/trainB)... Done. 0.3s
+<pre><span class="ansi-blue-intense-fg ansi-bold">wandb</span>: Adding directory to artifact (/home/tmabraham/.fastai/data/horse2zebra/trainA)... </pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Could not gather input dimensions
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Done. 0.3s
+<span class="ansi-blue-intense-fg ansi-bold">wandb</span>: Adding directory to artifact (/home/tmabraham/.fastai/data/horse2zebra/trainB)... Done. 0.2s
 </pre>
 </div>
 </div>
@@ -205,6 +226,26 @@ nb_path: "nbs/06_tracking.wandb.ipynb"
 Saving training set predictions
 </pre>
 </div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+
 </div>
 
 <div class="output_area">
@@ -230,31 +271,31 @@ Saving training set predictions
   <tbody>
     <tr>
       <td>0</td>
-      <td>10.217916</td>
-      <td>1.503999</td>
-      <td>1.580567</td>
-      <td>0.399754</td>
-      <td>0.429108</td>
-      <td>3.183522</td>
-      <td>3.330419</td>
-      <td>0.378100</td>
-      <td>0.381198</td>
-      <td>91.221733</td>
-      <td>02:27</td>
+      <td>9.867505</td>
+      <td>1.454771</td>
+      <td>1.509735</td>
+      <td>0.430915</td>
+      <td>0.450728</td>
+      <td>3.095023</td>
+      <td>3.188569</td>
+      <td>0.400037</td>
+      <td>0.400273</td>
+      <td>91.447801</td>
+      <td>00:18</td>
     </tr>
     <tr>
       <td>1</td>
-      <td>8.887602</td>
-      <td>1.201838</td>
-      <td>1.206192</td>
-      <td>0.297459</td>
-      <td>0.318193</td>
-      <td>2.533871</td>
-      <td>2.611986</td>
-      <td>0.253656</td>
-      <td>0.270657</td>
-      <td>90.616170</td>
-      <td>02:25</td>
+      <td>8.506508</td>
+      <td>1.120648</td>
+      <td>1.158904</td>
+      <td>0.289497</td>
+      <td>0.295813</td>
+      <td>2.388297</td>
+      <td>2.494975</td>
+      <td>0.258037</td>
+      <td>0.257544</td>
+      <td>94.591660</td>
+      <td>00:17</td>
     </tr>
   </tbody>
 </table></div>
@@ -264,7 +305,7 @@ Saving training set predictions
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>/usr/local/lib/python3.8/dist-packages/fastprogress/fastprogress.py:74: UserWarning: Your generator is empty.
+<pre>/home/tmabraham/anaconda3/envs/UPIT/lib/python3.9/site-packages/fastprogress/fastprogress.py:74: UserWarning: Your generator is empty.
   warn(&#34;Your generator is empty.&#34;)
 </pre>
 </div>
@@ -281,57 +322,84 @@ Saving training set predictions
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea "><br/>Waiting for W&B process to finish, PID 3195<br/>Program ended successfully.</div>
+<div class="output_html rendered_html output_subarea ">Waiting for W&B process to finish... <strong style="color:green">(success).</strong></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">Find user logs for this run at: <code>/spell/nbs/wandb/run-20210901_201422-124u5axw/logs/debug.log</code></div>
+<div class="output_html rendered_html output_subarea "><style>
+    table.wandb td:nth-child(1) { padding: 0 10px; text-align: left ; width: auto;} td:nth-child(2) {text-align: left ; width: 100%}
+    .wandb-row { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-start; width: 100% }
+    .wandb-col { display: flex; flex-direction: column; flex-basis: 100%; flex: 1; padding: 10px; }
+    </style>
+<div class="wandb-row"><div class="wandb-col"><h3>Run history:</h3><br/><table class="wandb"><tr><td>D_A_loss</td><td>█▁</td></tr><tr><td>D_B_loss</td><td>█▁</td></tr><tr><td>cyc_loss_A</td><td>█▁</td></tr><tr><td>cyc_loss_B</td><td>█▁</td></tr><tr><td>epoch</td><td>▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███</td></tr><tr><td>eps_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>frechet_inception_distance</td><td>▁█</td></tr><tr><td>gen_loss_A</td><td>█▁</td></tr><tr><td>gen_loss_B</td><td>█▁</td></tr><tr><td>id_loss_A</td><td>█▁</td></tr><tr><td>id_loss_B</td><td>█▁</td></tr><tr><td>lr_0</td><td>██████████████████████▇▇▇▆▆▆▅▅▅▄▄▃▃▃▂▂▂▁</td></tr><tr><td>mom_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>raw_loss</td><td>█▆▅▄▅▃▃▃▂▄▂▃▃▃▂▃▂▂▂▂▂▃▂▃▂▂▂▁▁▂▂▂▂▂▁▂▂▂▁▁</td></tr><tr><td>sqr_mom_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>train_loss</td><td>█▇▆▅▅▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>wd_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr></table><br/></div><div class="wandb-col"><h3>Run summary:</h3><br/><table class="wandb"><tr><td>D_A_loss</td><td>0.25804</td></tr><tr><td>D_B_loss</td><td>0.25754</td></tr><tr><td>cyc_loss_A</td><td>2.3883</td></tr><tr><td>cyc_loss_B</td><td>2.49498</td></tr><tr><td>epoch</td><td>2</td></tr><tr><td>eps_0</td><td>1e-05</td></tr><tr><td>frechet_inception_distance</td><td>94.59166</td></tr><tr><td>gen_loss_A</td><td>0.2895</td></tr><tr><td>gen_loss_B</td><td>0.29581</td></tr><tr><td>id_loss_A</td><td>1.12065</td></tr><tr><td>id_loss_B</td><td>1.1589</td></tr><tr><td>lr_0</td><td>1e-05</td></tr><tr><td>mom_0</td><td>0.5</td></tr><tr><td>raw_loss</td><td>6.90033</td></tr><tr><td>sqr_mom_0</td><td>0.999</td></tr><tr><td>train_loss</td><td>8.50651</td></tr><tr><td>wd_0</td><td>0.01</td></tr></table><br/></div></div></div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea ">Find internal logs for this run at: <code>/spell/nbs/wandb/run-20210901_201422-124u5axw/logs/debug-internal.log</code></div>
+<div class="output_html rendered_html output_subarea ">Synced <strong style="color:#cdcd00">colorful-dragon-27</strong>: <a href="https://wandb.ai/tmabraham/UPIT-nbs/runs/yidpx9j2" target="_blank">https://wandb.ai/tmabraham/UPIT-nbs/runs/yidpx9j2</a><br/>Synced 7 W&B file(s), 0 media file(s), 1 artifact file(s) and 1 other file(s)</div>
 
 </div>
 
 <div class="output_area">
 
 
-<div class="output_html rendered_html output_subarea "><h3>Run summary:</h3><br/><style>
-    table.wandb td:nth-child(1) { padding: 0 10px; text-align: right }
-    </style><table class="wandb">
-<tr><td>epoch</td><td>2</td></tr><tr><td>train_loss</td><td>8.8876</td></tr><tr><td>raw_loss</td><td>6.48146</td></tr><tr><td>wd_0</td><td>0.01</td></tr><tr><td>sqr_mom_0</td><td>0.999</td></tr><tr><td>lr_0</td><td>1e-05</td></tr><tr><td>mom_0</td><td>0.5</td></tr><tr><td>eps_0</td><td>1e-05</td></tr><tr><td>_runtime</td><td>303</td></tr><tr><td>_timestamp</td><td>1630527565</td></tr><tr><td>_step</td><td>49</td></tr><tr><td>id_loss_A</td><td>1.20184</td></tr><tr><td>id_loss_B</td><td>1.20619</td></tr><tr><td>gen_loss_A</td><td>0.29746</td></tr><tr><td>gen_loss_B</td><td>0.31819</td></tr><tr><td>cyc_loss_A</td><td>2.53387</td></tr><tr><td>cyc_loss_B</td><td>2.61199</td></tr><tr><td>D_A_loss</td><td>0.25366</td></tr><tr><td>D_B_loss</td><td>0.27066</td></tr><tr><td>frechet_inception_distance</td><td>90.61617</td></tr></table></div>
+<div class="output_html rendered_html output_subarea ">Find logs at: <code>./wandb/run-20220605_010714-yidpx9j2/logs</code></div>
 
 </div>
 
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea "><h3>Run history:</h3><br/><style>
-    table.wandb td:nth-child(1) { padding: 0 10px; text-align: right }
-    </style><table class="wandb">
-<tr><td>epoch</td><td>▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███</td></tr><tr><td>train_loss</td><td>█▇▆▅▄▄▄▄▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁</td></tr><tr><td>raw_loss</td><td>█▆▅▄▄▃▄▄▃▃▂▄▃▂▃▃▃▂▃▄▃▂▃▃▂▂▂▂▂▂▄▂▂▂▁▂▂▁▂▁</td></tr><tr><td>wd_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>sqr_mom_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>lr_0</td><td>██████████████████████▇▇▇▆▆▆▅▅▅▄▄▃▃▃▂▂▂▁</td></tr><tr><td>mom_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>eps_0</td><td>▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</td></tr><tr><td>_runtime</td><td>▁▁▁▁▂▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▅▅▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇█</td></tr><tr><td>_timestamp</td><td>▁▁▁▁▂▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▅▅▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇█</td></tr><tr><td>_step</td><td>▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███</td></tr><tr><td>id_loss_A</td><td>█▁</td></tr><tr><td>id_loss_B</td><td>█▁</td></tr><tr><td>gen_loss_A</td><td>█▁</td></tr><tr><td>gen_loss_B</td><td>█▁</td></tr><tr><td>cyc_loss_A</td><td>█▁</td></tr><tr><td>cyc_loss_B</td><td>█▁</td></tr><tr><td>D_A_loss</td><td>█▁</td></tr><tr><td>D_B_loss</td><td>█▁</td></tr><tr><td>frechet_inception_distance</td><td>█▁</td></tr></table><br/></div>
-
+</div>
 </div>
 
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">Synced 6 W&B file(s), 0 media file(s), 1 artifact file(s) and 1 other file(s)</div>
-
 </div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">preds</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="n">get_preds</span><span class="p">(</span><span class="n">dl</span><span class="o">=</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">with_decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
 
 <div class="output_area">
 
 
 <div class="output_html rendered_html output_subarea ">
-                    <br/>Synced <strong style="color:#cdcd00">polished-yogurt-6</strong>: <a href="https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw" target="_blank">https://wandb.ai/tmabraham/spell-nbs/runs/124u5axw</a><br/>
-                </div>
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea "></div>
 
 </div>
 

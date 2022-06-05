@@ -156,7 +156,7 @@ class UPITWandbCallback(Callback):
                 metadata = {n:s for n,s in zip(self.recorder.metric_names, self.recorder.log) if n not in ['train_loss', 'epoch', 'time']}
                 log_model(self.save_model.last_saved_path, metadata=metadata)
         self.run = True
-        if self.log_preds: self.remove_cb(FetchPredsCallback)
-        if self.add_save_model: self.remove_cb(SaveModelCallback)
+        self.learn.remove_cb(FetchPredsCallback)
+        self.learn.remove_cb(SaveModelAtEndCallback)
         wandb.log({})  # ensure sync of last step
         self._wandb_step += 1
