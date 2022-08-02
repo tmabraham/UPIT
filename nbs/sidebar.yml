@@ -1,0 +1,33 @@
+website:
+  sidebar:
+    collapse-level: 1
+    contents:
+      - text: "Overview"
+        href: index.ipynb
+      - section: Models
+        contents:
+          - text: "CycleGAN"
+            href: 01_models.cyclegan.ipynb
+          - text: "DualGAN"
+            href: 07_models.dualgan.ipynb
+          - text: "GANILLA"
+            href: 09_models.ganilla.ipynb
+      - section: Data Loading
+        contents:
+          - 02_data.unpaired.ipynb
+      - section: Training
+        contents:
+          - text: "CycleGAN"
+            href: 03_train.cyclegan.ipynb
+          - text: "DualGAN"
+            href: 08_train.dualgan.ipynb
+          - text: "Metrics"
+            href: 05_metrics.ipynb
+      - section: Batch Inference
+        contents:   
+          - text: "CycleGAN"
+            href: 04_inference.cyclegan.ipynb
+      - section: Tracking
+        contents:
+          - text: "Weights and Biases"
+            href: 06_tracking.wandb.ipynb

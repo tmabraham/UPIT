@@ -159,4 +159,4 @@ checklink/cookies.txt
 .gitconfig
 
 _docs/
-sidebar.yml
+# sidebar.yml - using custom sidebar
