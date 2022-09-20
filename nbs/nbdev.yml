@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "UPIT"
+  site-url: "https://tmabraham.github.io/UPIT"
+  description: "Unpaired Image-to-Image Translation with PyTorch+fastai"
+  repo-branch: master
+  repo-url: "https://github.com/tmabraham/UPIT/tree/master/"
