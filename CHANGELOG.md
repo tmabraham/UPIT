@@ -4,8 +4,7 @@
 
 ## 0.2.2
 
-
-
+Update nbdev stuff.
 
 ## 0.2.1
 
