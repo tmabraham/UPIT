@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Defines the loss and training loop functions/classes for CycleGAN.">
+
+<title>UPIT - CycleGAN training loop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="UPIT - CycleGAN training loop">
+<meta property="og:description" content="Defines the loss and training loop functions/classes for CycleGAN.">
+<meta property="og:image" content="https://tmabraham.github.io/UPIT/03_train.cyclegan_files/figure-html/cell-14-output-2.png">
+<meta property="og:site-name" content="UPIT">
+<meta property="og:image:height" content="264">
+<meta property="og:image:width" content="372">
+<meta name="twitter:title" content="UPIT - CycleGAN training loop">
+<meta name="twitter:description" content="Defines the loss and training loop functions/classes for CycleGAN.">
+<meta name="twitter:image" content="https://tmabraham.github.io/UPIT/03_train.cyclegan_files/figure-html/cell-14-output-2.png">
+<meta name="twitter:image-height" content="264">
+<meta name="twitter:image-width" content="372">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">UPIT</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./train.cyclegan.html">Training</a></li><li class="breadcrumb-item"><a href="./train.cyclegan.html">CycleGAN</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.ganilla.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GANILLA</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">Data Loading</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.unpaired.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unpaired data loading</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.cyclegan.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metrics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Batch Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./inference.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">Tracking</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tracking.wandb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Weights and Biases</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-loss-function" id="toc-the-loss-function" class="nav-link active" data-scroll-target="#the-loss-function">The Loss Function</a>
+  <ul class="collapse">
+  <li><a href="#cycleganloss" id="toc-cycleganloss" class="nav-link" data-scroll-target="#cycleganloss">CycleGANLoss</a></li>
+  <li><a href="#cycleganloss.__init__" id="toc-cycleganloss.__init__" class="nav-link" data-scroll-target="#cycleganloss.__init__">CycleGANLoss.__init__</a></li>
+  <li><a href="#cycleganloss.set_input" id="toc-cycleganloss.set_input" class="nav-link" data-scroll-target="#cycleganloss.set_input">CycleGANLoss.set_input</a></li>
+  <li><a href="#cycleganloss.forward" id="toc-cycleganloss.forward" class="nav-link" data-scroll-target="#cycleganloss.forward">CycleGANLoss.forward</a></li>
+  </ul></li>
+  <li><a href="#training-loop-callback" id="toc-training-loop-callback" class="nav-link" data-scroll-target="#training-loop-callback">Training loop callback</a>
+  <ul class="collapse">
+  <li><a href="#cyclegantrainer" id="toc-cyclegantrainer" class="nav-link" data-scroll-target="#cyclegantrainer">CycleGANTrainer</a></li>
+  <li><a href="#cyclegantrainer._set_trainable" id="toc-cyclegantrainer._set_trainable" class="nav-link" data-scroll-target="#cyclegantrainer._set_trainable">CycleGANTrainer._set_trainable</a></li>
+  <li><a href="#cyclegantrainer.after_batch" id="toc-cyclegantrainer.after_batch" class="nav-link" data-scroll-target="#cyclegantrainer.after_batch">CycleGANTrainer.after_batch</a></li>
+  <li><a href="#showimgscallback" id="toc-showimgscallback" class="nav-link" data-scroll-target="#showimgscallback">ShowImgsCallback</a></li>
+  <li><a href="#showimgscallback.__init__" id="toc-showimgscallback.__init__" class="nav-link" data-scroll-target="#showimgscallback.__init__">ShowImgsCallback.__init__</a></li>
+  <li><a href="#showimgscallback.after_epoch" id="toc-showimgscallback.after_epoch" class="nav-link" data-scroll-target="#showimgscallback.after_epoch">ShowImgsCallback.after_epoch</a></li>
+  </ul></li>
+  <li><a href="#cyclegan-lr-scheduler" id="toc-cyclegan-lr-scheduler" class="nav-link" data-scroll-target="#cyclegan-lr-scheduler">CycleGAN LR scheduler</a>
+  <ul class="collapse">
+  <li><a href="#combined_flat_anneal" id="toc-combined_flat_anneal" class="nav-link" data-scroll-target="#combined_flat_anneal">combined_flat_anneal</a></li>
+  <li><a href="#learner.fit_flat_lin" id="toc-learner.fit_flat_lin" class="nav-link" data-scroll-target="#learner.fit_flat_lin">Learner.fit_flat_lin</a></li>
+  </ul></li>
+  <li><a href="#cyclegan-learner-construction" id="toc-cyclegan-learner-construction" class="nav-link" data-scroll-target="#cyclegan-learner-construction">CycleGAN Learner construction</a>
+  <ul class="collapse">
+  <li><a href="#cycle_learner" id="toc-cycle_learner" class="nav-link" data-scroll-target="#cycle_learner">cycle_learner</a></li>
+  </ul></li>
+  <li><a href="#quick-test" id="toc-quick-test" class="nav-link" data-scroll-target="#quick-test">Quick Test</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/tmabraham/UPIT/tree/master/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">CycleGAN training loop</h1>
+</div>
+
+<div>
+  <div class="description">
+    Defines the loss and training loop functions/classes for CycleGAN.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>set_seed(<span class="dv">999</span>, reproducible<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="the-loss-function" class="level2">
+<h2 class="anchored" data-anchor-id="the-loss-function">The Loss Function</h2>
+<p>Let’s start out by writing the loss function for the CycleGAN model. The main loss used to train the generators. It has three parts: - the classic GAN loss: they must make the discriminator believe their images are real. - identity loss: if they are given an image from the domain they are trying to imitate, they should return the same thing - cycle loss: if an image from domain A goes through the generator that imitates domain B then through the generator that imitates domain A, it should be reconstructed as the same initial image. Same for domain B and switching the generators</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L15" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="cycleganloss" class="level3">
+<h3 class="anchored" data-anchor-id="cycleganloss">CycleGANLoss</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANLoss (cgan:torch.nn.modules.module.Module, l_A:float=10.0,
+               l_B:float=10, l_idt:float=0.5, lsgan:bool=True)</code></pre>
+</blockquote>
+<p>CycleGAN loss function. The individual loss terms are also atrributes of this class that are accessed by fastai for recording during training.</p>
+<p>Attributes:</p>
+<p><code>self.cgan</code> (<code>nn.Module</code>): The CycleGAN model.</p>
+<p><code>self.l_A</code> (<code>float</code>): lambda_A, weight of domain A losses.</p>
+<p><code>self.l_B</code> (<code>float</code>): lambda_B, weight of domain B losses.</p>
+<p><code>self.l_idt</code> (<code>float</code>): lambda_idt, weight of identity lossees.</p>
+<p><code>self.crit</code> (<code>AdaptiveLoss</code>): The adversarial loss function (either a BCE or MSE loss depending on <code>lsgan</code> argument)</p>
+<p><code>self.real_A</code> and <code>self.real_B</code> (<a href="https://docs.fast.ai/torch_core.html#tensorimage"><code>fastai.torch_core.TensorImage</code></a>): Real images from domain A and B.</p>
+<p><code>self.id_loss_A</code> (<code>torch.FloatTensor</code>): The identity loss for domain A calculated in the forward function</p>
+<p><code>self.id_loss_B</code> (<code>torch.FloatTensor</code>): The identity loss for domain B calculated in the forward function</p>
+<p><code>self.gen_loss</code> (<code>torch.FloatTensor</code>): The generator loss calculated in the forward function</p>
+<p><code>self.cyc_loss</code> (<code>torch.FloatTensor</code>): The cyclic loss calculated in the forward function</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L43" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cycleganloss.__init__" class="level3">
+<h3 class="anchored" data-anchor-id="cycleganloss.__init__">CycleGANLoss.__init__</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANLoss.__init__ (cgan:torch.nn.modules.module.Module,
+                        l_A:float=10.0, l_B:float=10, l_idt:float=0.5,
+                        lsgan:bool=True)</code></pre>
+</blockquote>
+<p>Constructor for CycleGAN loss.</p>
+<p>Arguments:</p>
+<p><code>cgan</code> (<code>nn.Module</code>): The CycleGAN model.</p>
+<p><code>l_A</code> (<code>float</code>): weight of domain A losses. (default=10)</p>
+<p><code>l_B</code> (<code>float</code>): weight of domain B losses. (default=10)</p>
+<p><code>l_idt</code> (<code>float</code>): weight of identity losses. (default=0.5)</p>
+<p><code>lsgan</code> (<code>bool</code>): Whether or not to use LSGAN objective. (default=True)</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L59" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cycleganloss.set_input" class="level3">
+<h3 class="anchored" data-anchor-id="cycleganloss.set_input">CycleGANLoss.set_input</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANLoss.set_input (input)</code></pre>
+</blockquote>
+<p>set <code>self.real_A</code> and <code>self.real_B</code> for future loss calculation</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L61" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cycleganloss.forward" class="level3">
+<h3 class="anchored" data-anchor-id="cycleganloss.forward">CycleGANLoss.forward</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANLoss.forward (output, target)</code></pre>
+</blockquote>
+<p>Forward function of the CycleGAN loss function. The generated images are passed in as output (which comes from the model) and the generator loss is returned.</p>
+</section>
+</section>
+<section id="training-loop-callback" class="level2">
+<h2 class="anchored" data-anchor-id="training-loop-callback">Training loop callback</h2>
+<p>Let’s now write the main callback to train a CycleGAN model.</p>
+<p>Fastai’s callback system is very flexible, allowing us to adjust the traditional training loop in any conceivable way possible. Let’s use it for GAN training.</p>
+<p>We have the <code>_set_trainable</code> function that is called with arguments telling which networks need to be put in training mode or which need to be frozen.</p>
+<p>When we start training <code>before_train</code>, we define separate optimizers. <code>self.opt_G</code> for the generators and <code>self.opt_D</code> for the discriminators. Then we put the generators in training mode (with <code>_set_trainable</code>).</p>
+<p>Before passing the batch into the model (<code>before_batch</code>), we have to fix it since the domain B image was kept as the target, but it also needs to be passed into the model. We also set the inputs for the loss function.</p>
+<p>In <code>after_batch</code>, we calculate the discriminator losses, backpropagate, and update the weights of both the discriminators. The main training loop will train the generators.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L79" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="cyclegantrainer" class="level3">
+<h3 class="anchored" data-anchor-id="cyclegantrainer">CycleGANTrainer</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANTrainer ()</code></pre>
+</blockquote>
+<p><code>Learner</code> Callback for training a CycleGAN model.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L85" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cyclegantrainer._set_trainable" class="level3">
+<h3 class="anchored" data-anchor-id="cyclegantrainer._set_trainable">CycleGANTrainer._set_trainable</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANTrainer._set_trainable (disc=False)</code></pre>
+</blockquote>
+<p>Put the generators or discriminators in training mode depending on arguments.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L117" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cyclegantrainer.after_batch" class="level3">
+<h3 class="anchored" data-anchor-id="cyclegantrainer.after_batch">CycleGANTrainer.after_batch</h3>
+<blockquote class="blockquote">
+<pre><code> CycleGANTrainer.after_batch (**kwargs)</code></pre>
+</blockquote>
+<p>Discriminator training loop</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L141" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="showimgscallback" class="level3">
+<h3 class="anchored" data-anchor-id="showimgscallback">ShowImgsCallback</h3>
+<blockquote class="blockquote">
+<pre><code> ShowImgsCallback (imgA:bool=False, imgB:bool=True,
+                   show_img_interval:int=10)</code></pre>
+</blockquote>
+<p>Update the progress bar with input and prediction images</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L144" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="showimgscallback.__init__" class="level3">
+<h3 class="anchored" data-anchor-id="showimgscallback.__init__">ShowImgsCallback.__init__</h3>
+<blockquote class="blockquote">
+<pre><code> ShowImgsCallback.__init__ (imgA:bool=False, imgB:bool=True,
+                            show_img_interval:int=10)</code></pre>
+</blockquote>
+<p>If <code>imgA</code> is True, display B-to-A conversion example during training. If <code>imgB</code> is True, display A-to-B conversion example. Show images every <code>show_img_interval</code> epochs.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L162" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="showimgscallback.after_epoch" class="level3">
+<h3 class="anchored" data-anchor-id="showimgscallback.after_epoch">ShowImgsCallback.after_epoch</h3>
+<blockquote class="blockquote">
+<pre><code> ShowImgsCallback.after_epoch ()</code></pre>
+</blockquote>
+<p>Update images</p>
+</section>
+</section>
+<section id="cyclegan-lr-scheduler" class="level2">
+<h2 class="anchored" data-anchor-id="cyclegan-lr-scheduler">CycleGAN LR scheduler</h2>
+<p>The original CycleGAN paper started with a period of constant learning rate and a period of linearly decaying learning rate. Let’s make a scheduler to implement this (with other possibilities as well). Fastai already comes with many types of hyperparameter schedules, and new ones can be created by combining existing ones. Let’s see how to do this:</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L175" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="combined_flat_anneal" class="level3">
+<h3 class="anchored" data-anchor-id="combined_flat_anneal">combined_flat_anneal</h3>
+<blockquote class="blockquote">
+<pre><code> combined_flat_anneal (pct:float, start_lr:float, end_lr:float=0,
+                       curve_type:str='linear')</code></pre>
+</blockquote>
+<p>Create a schedule with constant learning rate <code>start_lr</code> for <code>pct</code> proportion of the training, and a <code>curve_type</code> learning rate (till <code>end_lr</code>) for remaining portion of training.</p>
+<p>Arguments: <code>pct</code> (<code>float</code>): Proportion of training with a constant learning rate.</p>
+<p><code>start_lr</code> (<code>float</code>): Desired starting learning rate, used for beginnning <code>pct</code> of training.</p>
+<p><code>end_lr</code> (<code>float</code>): Desired end learning rate, training will conclude at this learning rate.</p>
+<p><code>curve_type</code> (<code>str</code>): Curve type for learning rate annealing. Options are ‘linear’, ‘cosine’, and ‘exponential’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> torch.linspace(<span class="fl">0.</span>,<span class="dv">1</span>,<span class="dv">200</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.plot(p, [combined_flat_anneal(<span class="fl">0.5</span>,<span class="dv">1</span>,<span class="fl">1e-2</span>,curve_type<span class="op">=</span><span class="st">'linear'</span>)(o) <span class="cf">for</span> o <span class="kw">in</span> p],label <span class="op">=</span> <span class="st">'linear annealing'</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>plt.plot(p, [combined_flat_anneal(<span class="fl">0.5</span>,<span class="dv">1</span>,<span class="fl">1e-2</span>,curve_type<span class="op">=</span><span class="st">'cosine'</span>)(o) <span class="cf">for</span> o <span class="kw">in</span> p],label <span class="op">=</span> <span class="st">'cosine annealing'</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>plt.plot(p, [combined_flat_anneal(<span class="fl">0.5</span>,<span class="dv">1</span>,<span class="fl">1e-2</span>,curve_type<span class="op">=</span><span class="st">'exponential'</span>)(o) <span class="cf">for</span> o <span class="kw">in</span> p],label <span class="op">=</span> <span class="st">'exponential annealing'</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Constant+annealing LR schedules'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Text(0.5, 1.0, 'Constant+annealing LR schedules')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now that we have the learning rate schedule, we can write a quick training function that can be added as a method to <code>Learner</code> using <code>@patch</code> decorator. Function is inspired by <a href="https://github.com/fastai/fastai/blob/master/fastai/callback/schedule.py">this code</a>.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L196" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="learner.fit_flat_lin" class="level3">
+<h3 class="anchored" data-anchor-id="learner.fit_flat_lin">Learner.fit_flat_lin</h3>
+<blockquote class="blockquote">
+<pre><code> Learner.fit_flat_lin (n_epochs:int=100, n_epochs_decay:int=100,
+                       start_lr:float=None, end_lr:float=0,
+                       curve_type:str='linear', wd:float=None, cbs=None,
+                       reset_opt=False)</code></pre>
+</blockquote>
+<p>Fit <code>self.model</code> for <code>n_epoch</code> at flat <code>start_lr</code> before <code>curve_type</code> annealing to <code>end_lr</code> with weight decay of <code>wd</code> and callbacks <code>cbs</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastai.test_utils <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> synth_learner()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>learn.fit_flat_lin(n_epochs<span class="op">=</span><span class="dv">2</span>,n_epochs_decay<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>23.626183</td>
+<td>20.342035</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>20.433842</td>
+<td>13.960705</td>
+<td>00:00</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>17.039629</td>
+<td>9.767084</td>
+<td>00:00</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>14.475015</td>
+<td>8.587482</td>
+<td>00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>learn.recorder.plot_sched()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-18-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="cyclegan-learner-construction" class="level2">
+<h2 class="anchored" data-anchor-id="cyclegan-learner-construction">CycleGAN Learner construction</h2>
+<p>Below, we now define a method for initializing a <code>Learner</code> with the CycleGAN model and training callback.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/cyclegan.py#L209" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="cycle_learner" class="level3">
+<h3 class="anchored" data-anchor-id="cycle_learner">cycle_learner</h3>
+<blockquote class="blockquote">
+<pre><code> cycle_learner (dls:fastai.data.load.DataLoader,
+                m:upit.models.cyclegan.CycleGAN, opt_func=&lt;function Adam&gt;,
+                loss_func=&lt;class '__main__.CycleGANLoss'&gt;,
+                show_imgs:bool=True, imgA:bool=True, imgB:bool=True,
+                show_img_interval:bool=10, metrics:list=[], cbs:list=[],
+                lr:Union[float,slice]=0.001, splitter:&lt;built-
+                infunctioncallable&gt;=&lt;function trainable_params&gt;,
+                path:Union[str,pathlib.Path,NoneType]=None,
+                model_dir:Union[str,pathlib.Path]='models',
+                wd:Union[float,int,NoneType]=None, wd_bn_bias:bool=False,
+                train_bn:bool=True, moms:tuple=(0.95, 0.85, 0.95),
+                default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Initialize and return a <code>Learner</code> object with the data in <code>dls</code>, CycleGAN model <code>m</code>, optimizer function <code>opt_func</code>, metrics <code>metrics</code>, and callbacks <code>cbs</code>. Additionally, if <code>show_imgs</code> is True, it will show intermediate predictions during training. It will show domain B-to-A predictions if <code>imgA</code> is True and/or domain A-to-B predictions if <code>imgB</code> is True. Additionally, it will show images every <code>show_img_interval</code> epochs. <code>Other</code>Learner` arguments can be passed as well.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td>DataLoaders</td>
+<td></td>
+<td><code>DataLoaders</code> containing fastai or PyTorch <code>DataLoader</code>s</td>
+</tr>
+<tr class="even">
+<td>m</td>
+<td>CycleGAN</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>opt_func</td>
+<td>Optimizer | OptimWrapper</td>
+<td>Adam</td>
+<td>Optimization function for training</td>
+</tr>
+<tr class="even">
+<td>loss_func</td>
+<td>callable | None</td>
+<td>None</td>
+<td>Loss function. Defaults to <code>dls</code> loss</td>
+</tr>
+<tr class="odd">
+<td>show_imgs</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>imgA</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>imgB</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>show_img_interval</td>
+<td>bool</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>metrics</td>
+<td>callable | MutableSequence | None</td>
+<td>None</td>
+<td><code>Metric</code>s to calculate on validation set</td>
+</tr>
+<tr class="even">
+<td>cbs</td>
+<td>Callback | MutableSequence | None</td>
+<td>None</td>
+<td><code>Callback</code>s to add to <code>Learner</code></td>
+</tr>
+<tr class="odd">
+<td>lr</td>
+<td>float | slice</td>
+<td>0.001</td>
+<td>Default learning rate</td>
+</tr>
+<tr class="even">
+<td>splitter</td>
+<td>callable</td>
+<td>trainable_params</td>
+<td>Split model into parameter groups. Defaults to one parameter group</td>
+</tr>
+<tr class="odd">
+<td>path</td>
+<td>str | Path | None</td>
+<td>None</td>
+<td>Parent directory to save, load, and export models. Defaults to <code>dls</code> <code>path</code></td>
+</tr>
+<tr class="even">
+<td>model_dir</td>
+<td>str | Path</td>
+<td>models</td>
+<td>Subdirectory to save and load models</td>
+</tr>
+<tr class="odd">
+<td>wd</td>
+<td>float | int | None</td>
+<td>None</td>
+<td>Default weight decay</td>
+</tr>
+<tr class="even">
+<td>wd_bn_bias</td>
+<td>bool</td>
+<td>False</td>
+<td>Apply weight decay to normalization and bias parameters</td>
+</tr>
+<tr class="odd">
+<td>train_bn</td>
+<td>bool</td>
+<td>True</td>
+<td>Train frozen normalization layers</td>
+</tr>
+<tr class="even">
+<td>moms</td>
+<td>tuple</td>
+<td>(0.95, 0.85, 0.95)</td>
+<td>Default momentum for schedulers</td>
+</tr>
+<tr class="odd">
+<td>default_cbs</td>
+<td>bool</td>
+<td>True</td>
+<td>Include default <code>Callback</code>s</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="quick-test" class="level2">
+<h2 class="anchored" data-anchor-id="quick-test">Quick Test</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>horse2zebra <span class="op">=</span> untar_data(<span class="st">'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>folders <span class="op">=</span> horse2zebra.ls().<span class="bu">sorted</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>trainA_path <span class="op">=</span> folders[<span class="dv">2</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>trainB_path <span class="op">=</span> folders[<span class="dv">3</span>]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>testA_path <span class="op">=</span> folders[<span class="dv">0</span>]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>testB_path <span class="op">=</span> folders[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cycle_gan <span class="op">=</span> CycleGAN(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">64</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> cycle_learner(dls, cycle_gan,show_img_interval<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>learn.show_training_loop()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Start Fit
+   - before_fit     : [TrainEvalCallback, ShowImgsCallback, Recorder, ProgressCallback]
+  Start Epoch Loop
+     - before_epoch   : [Recorder, ProgressCallback]
+    Start Train
+       - before_train   : [TrainEvalCallback, CycleGANTrainer, Recorder, ProgressCallback]
+      Start Batch Loop
+         - before_batch   : [CycleGANTrainer]
+         - after_pred     : []
+         - after_loss     : []
+         - before_backward: []
+         - before_step    : []
+         - after_step     : [CycleGANTrainer]
+         - after_cancel_batch: []
+         - after_batch    : [TrainEvalCallback, CycleGANTrainer, Recorder, ProgressCallback]
+      End Batch Loop
+    End Train
+     - after_cancel_train: [Recorder]
+     - after_train    : [Recorder, ProgressCallback]
+    Start Valid
+       - before_validate: [TrainEvalCallback, CycleGANTrainer, Recorder, ProgressCallback]
+      Start Batch Loop
+         - **CBs same as train batch**: []
+      End Batch Loop
+    End Valid
+     - after_cancel_validate: [Recorder]
+     - after_validate : [Recorder, ProgressCallback]
+  End Epoch Loop
+   - after_cancel_epoch: []
+   - after_epoch    : [ShowImgsCallback, Recorder]
+End Fit
+ - after_cancel_fit: []
+ - after_fit      : [ProgressCallback]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">type</span>(learn),Learner)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/tmabraham/anaconda3/envs/UPIT/lib/python3.9/site-packages/fastprogress/fastprogress.py:74: UserWarning: Your generator is empty.
+  warn("Your generator is empty.")
+/home/tmabraham/anaconda3/envs/UPIT/lib/python3.9/site-packages/fastai/learner.py:55: UserWarning: Could not load the optimizer state.
+  if with_opt: warn("Could not load the optimizer state.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(valley=7.585775892948732e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-27-output-5.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>learn.fit_flat_lin(<span class="dv">5</span>,<span class="dv">5</span>,<span class="fl">2e-4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">id_loss_A</th>
+<th data-quarto-table-cell-role="th">id_loss_B</th>
+<th data-quarto-table-cell-role="th">gen_loss_A</th>
+<th data-quarto-table-cell-role="th">gen_loss_B</th>
+<th data-quarto-table-cell-role="th">cyc_loss_A</th>
+<th data-quarto-table-cell-role="th">cyc_loss_B</th>
+<th data-quarto-table-cell-role="th">D_A_loss</th>
+<th data-quarto-table-cell-role="th">D_B_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>11.072145</td>
+<td>1.640516</td>
+<td>1.656911</td>
+<td>0.375354</td>
+<td>0.837723</td>
+<td>3.378847</td>
+<td>3.488000</td>
+<td>0.335865</td>
+<td>0.487188</td>
+<td>00:06</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>9.442083</td>
+<td>1.247157</td>
+<td>1.282357</td>
+<td>0.277883</td>
+<td>0.259882</td>
+<td>2.677947</td>
+<td>2.745830</td>
+<td>0.266643</td>
+<td>0.268916</td>
+<td>00:07</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>8.649205</td>
+<td>1.111012</td>
+<td>1.206819</td>
+<td>0.303226</td>
+<td>0.315038</td>
+<td>2.388910</td>
+<td>2.627970</td>
+<td>0.253195</td>
+<td>0.241816</td>
+<td>00:07</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>8.046769</td>
+<td>1.097790</td>
+<td>1.035227</td>
+<td>0.293115</td>
+<td>0.301284</td>
+<td>2.343968</td>
+<td>2.258730</td>
+<td>0.247176</td>
+<td>0.234314</td>
+<td>00:07</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>7.690011</td>
+<td>1.046379</td>
+<td>1.057508</td>
+<td>0.290288</td>
+<td>0.330028</td>
+<td>2.205441</td>
+<td>2.325534</td>
+<td>0.250845</td>
+<td>0.219718</td>
+<td>00:07</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>7.262819</td>
+<td>1.013530</td>
+<td>0.901757</td>
+<td>0.309617</td>
+<td>0.314876</td>
+<td>2.126933</td>
+<td>2.008702</td>
+<td>0.240130</td>
+<td>0.225835</td>
+<td>00:08</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>6.940499</td>
+<td>0.943555</td>
+<td>0.880684</td>
+<td>0.301979</td>
+<td>0.329805</td>
+<td>2.035716</td>
+<td>1.983523</td>
+<td>0.242219</td>
+<td>0.223504</td>
+<td>00:08</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>6.726294</td>
+<td>0.928122</td>
+<td>0.899857</td>
+<td>0.307265</td>
+<td>0.320807</td>
+<td>1.949748</td>
+<td>2.006305</td>
+<td>0.231187</td>
+<td>0.210763</td>
+<td>00:08</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>6.461397</td>
+<td>0.884317</td>
+<td>0.830321</td>
+<td>0.305884</td>
+<td>0.326825</td>
+<td>1.902252</td>
+<td>1.801770</td>
+<td>0.229438</td>
+<td>0.213273</td>
+<td>00:08</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>6.317296</td>
+<td>0.896565</td>
+<td>0.852179</td>
+<td>0.321770</td>
+<td>0.320993</td>
+<td>1.873770</td>
+<td>1.843444</td>
+<td>0.221933</td>
+<td>0.220043</td>
+<td>00:08</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-28-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>learn.recorder.plot_loss(with_valid<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-29-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>cycle_gan <span class="op">=</span> CycleGAN(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">64</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>loss_func <span class="op">=</span> partial(CycleGANLoss, l_idt<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> cycle_learner(dls, cycle_gan, loss_func<span class="op">=</span>loss_func, show_img_interval<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">type</span>(learn),Learner)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>test_eq(learn.loss_func.l_idt, <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>learn.lr_find()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>SuggestedLRs(valley=5.248074739938602e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-34-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>learn.fit_flat_lin(<span class="dv">5</span>,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">id_loss_A</th>
+<th data-quarto-table-cell-role="th">id_loss_B</th>
+<th data-quarto-table-cell-role="th">gen_loss_A</th>
+<th data-quarto-table-cell-role="th">gen_loss_B</th>
+<th data-quarto-table-cell-role="th">cyc_loss_A</th>
+<th data-quarto-table-cell-role="th">cyc_loss_B</th>
+<th data-quarto-table-cell-role="th">D_A_loss</th>
+<th data-quarto-table-cell-role="th">D_B_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>8.013542</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.415603</td>
+<td>0.605523</td>
+<td>3.475492</td>
+<td>3.725508</td>
+<td>0.511603</td>
+<td>0.547689</td>
+<td>00:06</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>7.033264</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.286641</td>
+<td>0.327472</td>
+<td>2.772444</td>
+<td>3.095340</td>
+<td>0.276890</td>
+<td>0.271155</td>
+<td>00:07</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>6.641585</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.284850</td>
+<td>0.292105</td>
+<td>2.692654</td>
+<td>2.993103</td>
+<td>0.252079</td>
+<td>0.252860</td>
+<td>00:07</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>6.357308</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.275745</td>
+<td>0.292774</td>
+<td>2.705673</td>
+<td>2.779573</td>
+<td>0.255172</td>
+<td>0.255423</td>
+<td>00:07</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>6.097081</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.283673</td>
+<td>0.298791</td>
+<td>2.574903</td>
+<td>2.593902</td>
+<td>0.241834</td>
+<td>0.228963</td>
+<td>00:07</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>5.914270</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.284902</td>
+<td>0.327440</td>
+<td>2.468222</td>
+<td>2.578838</td>
+<td>0.237878</td>
+<td>0.232171</td>
+<td>00:08</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>5.796364</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.307585</td>
+<td>0.299103</td>
+<td>2.421084</td>
+<td>2.611041</td>
+<td>0.230458</td>
+<td>0.239380</td>
+<td>00:08</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>5.586002</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.320189</td>
+<td>0.331698</td>
+<td>2.315644</td>
+<td>2.325492</td>
+<td>0.228474</td>
+<td>0.232233</td>
+<td>00:08</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>5.458314</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.331234</td>
+<td>0.284459</td>
+<td>2.333813</td>
+<td>2.349262</td>
+<td>0.218699</td>
+<td>0.244563</td>
+<td>00:08</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>5.266456</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.287622</td>
+<td>0.288966</td>
+<td>2.267640</td>
+<td>2.139976</td>
+<td>0.230699</td>
+<td>0.244301</td>
+<td>00:08</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-35-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>learn.recorder.plot_loss(with_valid<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="03_train.cyclegan_files/figure-html/cell-36-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>UPIT - Original CycleGAN implementation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="UPIT - Original CycleGAN implementation">
+<meta property="og:description" content="">
+<meta property="og:site-name" content="UPIT">
+<meta name="twitter:title" content="UPIT - Original CycleGAN implementation">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">UPIT</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Original CycleGAN implementation</li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.ganilla.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GANILLA</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">Data Loading</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.unpaired.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unpaired data loading</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metrics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Batch Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./inference.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">Tracking</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tracking.wandb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Weights and Biases</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#taken-from-here" id="toc-taken-from-here" class="nav-link active" data-scroll-target="#taken-from-here">Taken from here:</a>
+  <ul class="collapse">
+  <li><a href="#pixeldiscriminator" id="toc-pixeldiscriminator" class="nav-link" data-scroll-target="#pixeldiscriminator">PixelDiscriminator</a></li>
+  <li><a href="#nlayerdiscriminator" id="toc-nlayerdiscriminator" class="nav-link" data-scroll-target="#nlayerdiscriminator">NLayerDiscriminator</a></li>
+  <li><a href="#unetskipconnectionblock" id="toc-unetskipconnectionblock" class="nav-link" data-scroll-target="#unetskipconnectionblock">UnetSkipConnectionBlock</a></li>
+  <li><a href="#unetgenerator" id="toc-unetgenerator" class="nav-link" data-scroll-target="#unetgenerator">UnetGenerator</a></li>
+  <li><a href="#resnetblock" id="toc-resnetblock" class="nav-link" data-scroll-target="#resnetblock">ResnetBlock</a></li>
+  <li><a href="#resnetgenerator" id="toc-resnetgenerator" class="nav-link" data-scroll-target="#resnetgenerator">ResnetGenerator</a></li>
+  <li><a href="#cal_gradient_penalty" id="toc-cal_gradient_penalty" class="nav-link" data-scroll-target="#cal_gradient_penalty">cal_gradient_penalty</a></li>
+  <li><a href="#ganloss" id="toc-ganloss" class="nav-link" data-scroll-target="#ganloss">GANLoss</a></li>
+  <li><a href="#define_d" id="toc-define_d" class="nav-link" data-scroll-target="#define_d">define_D</a></li>
+  <li><a href="#define_g" id="toc-define_g" class="nav-link" data-scroll-target="#define_g">define_G</a></li>
+  <li><a href="#init_net" id="toc-init_net" class="nav-link" data-scroll-target="#init_net">init_net</a></li>
+  <li><a href="#init_weights" id="toc-init_weights" class="nav-link" data-scroll-target="#init_weights">init_weights</a></li>
+  <li><a href="#get_scheduler" id="toc-get_scheduler" class="nav-link" data-scroll-target="#get_scheduler">get_scheduler</a></li>
+  <li><a href="#get_norm_layer" id="toc-get_norm_layer" class="nav-link" data-scroll-target="#get_norm_layer">get_norm_layer</a></li>
+  <li><a href="#identity" id="toc-identity" class="nav-link" data-scroll-target="#identity">Identity</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/tmabraham/UPIT/tree/master/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Original CycleGAN implementation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="taken-from-here" class="level2">
+<h2 class="anchored" data-anchor-id="taken-from-here">Taken from here:</h2>
+<p>https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/models/networks.py</p>
+<p>Was used before to confirm fastai implementation is correct. Not used elsewhere in the <code>UPIT</code> library.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L594" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="pixeldiscriminator" class="level3">
+<h3 class="anchored" data-anchor-id="pixeldiscriminator">PixelDiscriminator</h3>
+<blockquote class="blockquote">
+<pre><code> PixelDiscriminator (input_nc, ndf=64, norm_layer=&lt;class
+                     'torch.nn.modules.batchnorm.BatchNorm2d'&gt;)</code></pre>
+</blockquote>
+<p>Defines a 1x1 PatchGAN discriminator (pixelGAN)</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L546" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="nlayerdiscriminator" class="level3">
+<h3 class="anchored" data-anchor-id="nlayerdiscriminator">NLayerDiscriminator</h3>
+<blockquote class="blockquote">
+<pre><code> NLayerDiscriminator (input_nc, ndf=64, n_layers=3, norm_layer=&lt;class
+                      'torch.nn.modules.batchnorm.BatchNorm2d'&gt;)</code></pre>
+</blockquote>
+<p>Defines a PatchGAN discriminator</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L476" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="unetskipconnectionblock" class="level3">
+<h3 class="anchored" data-anchor-id="unetskipconnectionblock">UnetSkipConnectionBlock</h3>
+<blockquote class="blockquote">
+<pre><code> UnetSkipConnectionBlock (outer_nc, inner_nc, input_nc=None,
+                          submodule=None, outermost=False,
+                          innermost=False, norm_layer=&lt;class
+                          'torch.nn.modules.batchnorm.BatchNorm2d'&gt;,
+                          use_dropout=False)</code></pre>
+</blockquote>
+<p>Defines the Unet submodule with skip connection. X ——————-identity———————- |– downsampling – |submodule| – upsampling –|</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L444" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="unetgenerator" class="level3">
+<h3 class="anchored" data-anchor-id="unetgenerator">UnetGenerator</h3>
+<blockquote class="blockquote">
+<pre><code> UnetGenerator (input_nc, output_nc, num_downs, ngf=64, norm_layer=&lt;class
+                'torch.nn.modules.batchnorm.BatchNorm2d'&gt;,
+                use_dropout=False)</code></pre>
+</blockquote>
+<p>Create a Unet-based generator</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L384" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="resnetblock" class="level3">
+<h3 class="anchored" data-anchor-id="resnetblock">ResnetBlock</h3>
+<blockquote class="blockquote">
+<pre><code> ResnetBlock (dim, padding_type, norm_layer, use_dropout, use_bias)</code></pre>
+</blockquote>
+<p>Define a Resnet block</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L323" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="resnetgenerator" class="level3">
+<h3 class="anchored" data-anchor-id="resnetgenerator">ResnetGenerator</h3>
+<blockquote class="blockquote">
+<pre><code> ResnetGenerator (input_nc, output_nc, ngf=64, norm_layer=&lt;class
+                  'torch.nn.modules.batchnorm.BatchNorm2d'&gt;,
+                  use_dropout=False, n_blocks=6, padding_type='reflect')</code></pre>
+</blockquote>
+<p>Resnet-based generator that consists of Resnet blocks between a few downsampling/upsampling operations.</p>
+<p>We adapt Torch code and idea from Justin Johnson’s neural style transfer project(https://github.com/jcjohnson/fast-neural-style)</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L286" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cal_gradient_penalty" class="level3">
+<h3 class="anchored" data-anchor-id="cal_gradient_penalty">cal_gradient_penalty</h3>
+<blockquote class="blockquote">
+<pre><code> cal_gradient_penalty (netD, real_data, fake_data, device, type='mixed',
+                       constant=1.0, lambda_gp=10.0)</code></pre>
+</blockquote>
+<p>Calculate the gradient penalty loss, used in WGAN-GP paper https://arxiv.org/abs/1704.00028</p>
+<p>Arguments: netD (network) – discriminator network real_data (tensor array) – real images fake_data (tensor array) – generated images from the generator device (str) – GPU / CPU: from torch.device(‘cuda:{}’.format(self.gpu_ids[0])) if self.gpu_ids else torch.device(‘cpu’) type (str) – if we mix real and fake data or not [real | fake | mixed]. constant (float) – the constant used in formula ( | |gradient||_2 - constant)^2 lambda_gp (float) – weight for this loss</p>
+<p>Returns the gradient penalty loss</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L217" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="ganloss" class="level3">
+<h3 class="anchored" data-anchor-id="ganloss">GANLoss</h3>
+<blockquote class="blockquote">
+<pre><code> GANLoss (gan_mode, target_real_label=1.0, target_fake_label=0.0)</code></pre>
+</blockquote>
+<p>Define different GAN objectives.</p>
+<p>The GANLoss class abstracts away the need to create the target label tensor that has the same size as the input.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L170" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="define_d" class="level3">
+<h3 class="anchored" data-anchor-id="define_d">define_D</h3>
+<blockquote class="blockquote">
+<pre><code> define_D (input_nc, ndf, netD, n_layers_D=3, norm='batch',
+           init_type='normal', init_gain=0.02, gpu_ids=[])</code></pre>
+</blockquote>
+<p>Create a discriminator</p>
+<p>Parameters: input_nc (int) – the number of channels in input images ndf (int) – the number of filters in the first conv layer netD (str) – the architecture’s name: basic | n_layers | pixel n_layers_D (int) – the number of conv layers in the discriminator; effective when netD==‘n_layers’ norm (str) – the type of normalization layers used in the network. init_type (str) – the name of the initialization method. init_gain (float) – scaling factor for normal, xavier and orthogonal. gpu_ids (int list) – which GPUs the network runs on: e.g., 0,1,2</p>
+<p>Returns a discriminator</p>
+<p>Our current implementation provides three types of discriminators: [basic]: ‘PatchGAN’ classifier described in the original pix2pix paper. It can classify whether 70×70 overlapping patches are real or fake. Such a patch-level discriminator architecture has fewer parameters than a full-image discriminator and can work on arbitrarily-sized images in a fully convolutional fashion.</p>
+<pre><code>[n_layers]: With this mode, you can specify the number of conv layers in the discriminator
+with the parameter &lt;n_layers_D&gt; (default=3 as used in [basic] (PatchGAN).)
+
+[pixel]: 1x1 PixelGAN discriminator can classify whether a pixel is real or not.
+It encourages greater color diversity but has no effect on spatial statistics.</code></pre>
+<p>The discriminator has been initialized by <init_net>. It uses Leakly RELU for non-linearity.</init_net></p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L127" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="define_g" class="level3">
+<h3 class="anchored" data-anchor-id="define_g">define_G</h3>
+<blockquote class="blockquote">
+<pre><code> define_G (input_nc, output_nc, ngf, netG, norm='batch',
+           use_dropout=False, init_type='normal', init_gain=0.02,
+           gpu_ids=[])</code></pre>
+</blockquote>
+<p>Create a generator</p>
+<p>Parameters: input_nc (int) – the number of channels in input images output_nc (int) – the number of channels in output images ngf (int) – the number of filters in the last conv layer netG (str) – the architecture’s name: resnet_9blocks | resnet_6blocks | unet_256 | unet_128 norm (str) – the name of normalization layers used in the network: batch | instance | none use_dropout (bool) – if use dropout layers. init_type (str) – the name of our initialization method. init_gain (float) – scaling factor for normal, xavier and orthogonal. gpu_ids (int list) – which GPUs the network runs on: e.g., 0,1,2</p>
+<p>Returns a generator</p>
+<p>Our current implementation provides two types of generators: U-Net: [unet_128] (for 128x128 input images) and [unet_256] (for 256x256 input images) The original U-Net paper: https://arxiv.org/abs/1505.04597</p>
+<pre><code>Resnet-based generator: [resnet_6blocks] (with 6 Resnet blocks) and [resnet_9blocks] (with 9 Resnet blocks)
+Resnet-based generator consists of several Resnet blocks between a few downsampling/upsampling operations.
+We adapt Torch code from Justin Johnson's neural style transfer project (https://github.com/jcjohnson/fast-neural-style).</code></pre>
+<p>The generator has been initialized by <init_net>. It uses RELU for non-linearity.</init_net></p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L109" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="init_net" class="level3">
+<h3 class="anchored" data-anchor-id="init_net">init_net</h3>
+<blockquote class="blockquote">
+<pre><code> init_net (net, init_type='normal', init_gain=0.02, gpu_ids=[])</code></pre>
+</blockquote>
+<p>Initialize a network: 1. register CPU/GPU device (with multi-GPU support); 2. initialize the network weights Parameters: net (network) – the network to be initialized init_type (str) – the name of an initialization method: normal | xavier | kaiming | orthogonal gain (float) – scaling factor for normal, xavier and orthogonal. gpu_ids (int list) – which GPUs the network runs on: e.g., 0,1,2</p>
+<p>Return an initialized network.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L75" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="init_weights" class="level3">
+<h3 class="anchored" data-anchor-id="init_weights">init_weights</h3>
+<blockquote class="blockquote">
+<pre><code> init_weights (net, init_type='normal', init_gain=0.02)</code></pre>
+</blockquote>
+<p>Initialize network weights.</p>
+<p>Parameters: net (network) – network to be initialized init_type (str) – the name of an initialization method: normal | xavier | kaiming | orthogonal init_gain (float) – scaling factor for normal, xavier and orthogonal.</p>
+<p>We use ‘normal’ in the original pix2pix and CycleGAN paper. But xavier and kaiming might work better for some applications. Feel free to try yourself.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L46" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_scheduler" class="level3">
+<h3 class="anchored" data-anchor-id="get_scheduler">get_scheduler</h3>
+<blockquote class="blockquote">
+<pre><code> get_scheduler (optimizer, opt)</code></pre>
+</blockquote>
+<p>Return a learning rate scheduler</p>
+<p>Parameters: optimizer – the optimizer of the network opt (option class) – stores all the experiment flags; needs to be a subclass of BaseOptions．　 opt.lr_policy is the name of learning rate policy: linear | step | plateau | cosine</p>
+<p>For ‘linear’, we keep the same learning rate for the first &lt;opt.n_epochs&gt; epochs and linearly decay the rate to zero over the next &lt;opt.n_epochs_decay&gt; epochs. For other schedulers (step, plateau, and cosine), we use the default PyTorch schedulers. See https://pytorch.org/docs/stable/optim.html for more details.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L26" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_norm_layer" class="level3">
+<h3 class="anchored" data-anchor-id="get_norm_layer">get_norm_layer</h3>
+<blockquote class="blockquote">
+<pre><code> get_norm_layer (norm_type='instance')</code></pre>
+</blockquote>
+<p>Return a normalization layer</p>
+<p>Parameters: norm_type (str) – the name of the normalization layer: batch | instance | none</p>
+<p>For BatchNorm, we use learnable affine parameters and track running statistics (mean/stddev). For InstanceNorm, we do not use learnable affine parameters. We do not track running statistics.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/models/junyanz.py#L21" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="identity" class="level3">
+<h3 class="anchored" data-anchor-id="identity">Identity</h3>
+<blockquote class="blockquote">
+<pre><code> Identity (*args, **kwargs)</code></pre>
+</blockquote>
+<p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

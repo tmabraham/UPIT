@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Loading of the dataset into the fastai DataLoaders class.">
+
+<title>UPIT - Unpaired data loading</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="UPIT - Unpaired data loading">
+<meta property="og:description" content="Loading of the dataset into the fastai DataLoaders class.">
+<meta property="og:image" content="https://tmabraham.github.io/UPIT/02_data.unpaired_files/figure-html/cell-12-output-1.png">
+<meta property="og:site-name" content="UPIT">
+<meta property="og:image:height" content="337">
+<meta property="og:image:width" content="684">
+<meta name="twitter:title" content="UPIT - Unpaired data loading">
+<meta name="twitter:description" content="Loading of the dataset into the fastai DataLoaders class.">
+<meta name="twitter:image" content="https://tmabraham.github.io/UPIT/02_data.unpaired_files/figure-html/cell-12-output-1.png">
+<meta name="twitter:image-height" content="337">
+<meta name="twitter:image-width" content="684">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">UPIT</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data.unpaired.html">Data Loading</a></li><li class="breadcrumb-item"><a href="./data.unpaired.html">Unpaired data loading</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.ganilla.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GANILLA</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Data Loading</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.unpaired.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Unpaired data loading</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metrics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Batch Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./inference.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">Tracking</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tracking.wandb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Weights and Biases</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#example-dataset---horse-to-zebra-conversion" id="toc-example-dataset---horse-to-zebra-conversion" class="nav-link active" data-scroll-target="#example-dataset---horse-to-zebra-conversion">Example Dataset - Horse to Zebra conversion</a></li>
+  <li><a href="#create-dataloaders-object" id="toc-create-dataloaders-object" class="nav-link" data-scroll-target="#create-dataloaders-object">Create DataLoaders object:</a>
+  <ul class="collapse">
+  <li><a href="#randpair" id="toc-randpair" class="nav-link" data-scroll-target="#randpair">RandPair</a></li>
+  <li><a href="#tensorimageb" id="toc-tensorimageb" class="nav-link" data-scroll-target="#tensorimageb">TensorImageB</a></li>
+  <li><a href="#tensorimagea" id="toc-tensorimagea" class="nav-link" data-scroll-target="#tensorimagea">TensorImageA</a></li>
+  <li><a href="#pilimageb" id="toc-pilimageb" class="nav-link" data-scroll-target="#pilimageb">PILImageB</a></li>
+  <li><a href="#pilimagea" id="toc-pilimagea" class="nav-link" data-scroll-target="#pilimagea">PILImageA</a></li>
+  <li><a href="#totensorb" id="toc-totensorb" class="nav-link" data-scroll-target="#totensorb">ToTensorB</a></li>
+  <li><a href="#totensora" id="toc-totensora" class="nav-link" data-scroll-target="#totensora">ToTensorA</a></li>
+  <li><a href="#change_type_of_tfm" id="toc-change_type_of_tfm" class="nav-link" data-scroll-target="#change_type_of_tfm">change_type_of_tfm</a></li>
+  <li><a href="#get_dls" id="toc-get_dls" class="nav-link" data-scroll-target="#get_dls">get_dls</a></li>
+  <li><a href="#quick-tests" id="toc-quick-tests" class="nav-link" data-scroll-target="#quick-tests">Quick tests:</a></li>
+  </ul></li>
+  <li><a href="#huggingface-datasets-loader" id="toc-huggingface-datasets-loader" class="nav-link" data-scroll-target="#huggingface-datasets-loader">HuggingFace Datasets Loader</a>
+  <ul class="collapse">
+  <li><a href="#get_dls_from_hf" id="toc-get_dls_from_hf" class="nav-link" data-scroll-target="#get_dls_from_hf">get_dls_from_hf</a></li>
+  <li><a href="#create_image" id="toc-create_image" class="nav-link" data-scroll-target="#create_image">create_image</a></li>
+  <li><a href="#convert_func" id="toc-convert_func" class="nav-link" data-scroll-target="#convert_func">convert_func</a></li>
+  <li><a href="#quick-tests-1" id="toc-quick-tests-1" class="nav-link" data-scroll-target="#quick-tests-1">Quick tests</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/tmabraham/UPIT/tree/master/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Unpaired data loading</h1>
+</div>
+
+<div>
+  <div class="description">
+    Loading of the dataset into the fastai <code>DataLoaders</code> class.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nbdev.showdoc <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="example-dataset---horse-to-zebra-conversion" class="level2">
+<h2 class="anchored" data-anchor-id="example-dataset---horse-to-zebra-conversion">Example Dataset - Horse to Zebra conversion</h2>
+<p>Here, we are going to use the <code>horse2zebra</code> dataset provided by UC Berkeley. I have already downloaded it, You can download it at the URL https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip with the fastai <code>untar_data</code> function. Additionally, we can view the directory with <code>Path.ls()</code> (added by fastai).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>horse2zebra <span class="op">=</span> untar_data(<span class="st">'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>folders <span class="op">=</span> horse2zebra.ls().<span class="bu">sorted</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(folders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[Path('/home/tmabraham/.fastai/data/horse2zebra/testA'), Path('/home/tmabraham/.fastai/data/horse2zebra/testB'), Path('/home/tmabraham/.fastai/data/horse2zebra/trainA'), Path('/home/tmabraham/.fastai/data/horse2zebra/trainB')]</code></pre>
+</div>
+</div>
+<p>We can see that we have four directories, a train and test directory for both domains.</p>
+</section>
+<section id="create-dataloaders-object" class="level2">
+<h2 class="anchored" data-anchor-id="create-dataloaders-object">Create DataLoaders object:</h2>
+<p>We can treat the image in Domain A as the input and the image in Domain B as the target. We want to be able to index the dataset for a fixed image in domain A but a random image in domain B, in order to avoid fixed pairs.</p>
+<p>A brief summary of how fastai Datasets works: &gt; “A Datasets creates a tuple from items (typically input,target) by applying to them each list of Transform (or Pipeline) in tfms.”</p>
+<p>(from <a href="http://dev.fast.ai/data.core#Datasets">docs</a>)</p>
+<p>So for transforms we will have a list of list of transforms. Each list of transforms are used to obtain, process, and return the inputs (in this case Domain A) and the targets (Domain B) as a tuple.</p>
+<p>Let’s first get our image paths:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>trainA_path <span class="op">=</span> folders[<span class="dv">2</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>trainB_path <span class="op">=</span> folders[<span class="dv">3</span>]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>testA_path <span class="op">=</span> folders[<span class="dv">0</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>testB_path <span class="op">=</span> folders[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can use <code>get_image_files</code> to get the image files from the directories:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>filesA <span class="op">=</span> get_image_files(trainA_path)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>filesB <span class="op">=</span> get_image_files(trainB_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>filesA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1067) [Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_6873.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_6335.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_4123.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_4785.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_1798.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_691.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_2048.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_3329.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_835.jpg'),Path('/home/tmabraham/.fastai/data/horse2zebra/trainA/n02381460_993.jpg')...]</code></pre>
+</div>
+</div>
+<p>Now, we can have a Transform that randomly selects an image in domain B for the current pair:</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L17" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="randpair" class="level3">
+<h3 class="anchored" data-anchor-id="randpair">RandPair</h3>
+<blockquote class="blockquote">
+<pre><code> RandPair (itemsB)</code></pre>
+</blockquote>
+<p>Returns a random image from domain B, resulting in a random pair of images from domain A and B.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>test_ne(RandPair(filesB)(<span class="dv">0</span>),RandPair(filesB)(<span class="dv">0</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">type</span>(RandPair(filesB)(<span class="dv">0</span>)),<span class="bu">type</span>(Path(<span class="st">'.'</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s make our <code>Datasets</code> (assume no split for now). We load as a <code>PILImage</code>, convert to a <code>Tensor</code>, and resize:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>size<span class="op">=</span><span class="dv">128</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dsets <span class="op">=</span> Datasets(filesA, tfms<span class="op">=</span>[[PILImage.create, ToTensor, Resize(size)], </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                               [RandPair(filesB),PILImage.create, ToTensor, Resize(size)]],splits<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can create a <code>DataLoader</code>. Note that fastai allows for batch-level transforms that can be performed on an accelerator like a GPU. Let’s normalize the dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>batch_tfms <span class="op">=</span> [IntToFloatTensor, Normalize.from_stats(mean<span class="op">=</span><span class="fl">0.5</span>, std<span class="op">=</span><span class="fl">0.5</span>)]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dsets.dataloaders(bs<span class="op">=</span><span class="dv">4</span>, num_workers<span class="op">=</span><span class="dv">2</span>, after_batch<span class="op">=</span>batch_tfms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can also show the batch:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>xb,yb <span class="op">=</span> dls.one_batch()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>xb.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>torch.Size([4, 3, 128, 128])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(dls.after_batch.decode(xb)[<span class="dv">0</span>].cpu().permute(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>).numpy())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;matplotlib.image.AxesImage&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Some hacks for custom normalization for each of the inputs.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L26" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tensorimageb" class="level3">
+<h3 class="anchored" data-anchor-id="tensorimageb">TensorImageB</h3>
+<blockquote class="blockquote">
+<pre><code> TensorImageB (x, **kwargs)</code></pre>
+</blockquote>
+<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L25" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="tensorimagea" class="level3">
+<h3 class="anchored" data-anchor-id="tensorimagea">TensorImageA</h3>
+<blockquote class="blockquote">
+<pre><code> TensorImageA (x, **kwargs)</code></pre>
+</blockquote>
+<p>A <code>Tensor</code> which support subclass pickling, and maintains metadata when casting or after methods</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L24" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="pilimageb" class="level3">
+<h3 class="anchored" data-anchor-id="pilimageb">PILImageB</h3>
+<blockquote class="blockquote">
+<pre><code> PILImageB ()</code></pre>
+</blockquote>
+<p>A RGB Pillow <code>Image</code> that can show itself and converts to <code>TensorImage</code></p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L23" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="pilimagea" class="level3">
+<h3 class="anchored" data-anchor-id="pilimagea">PILImageA</h3>
+<blockquote class="blockquote">
+<pre><code> PILImageA ()</code></pre>
+</blockquote>
+<p>A RGB Pillow <code>Image</code> that can show itself and converts to <code>TensorImage</code></p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L35" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="totensorb" class="level3">
+<h3 class="anchored" data-anchor-id="totensorb">ToTensorB</h3>
+<blockquote class="blockquote">
+<pre><code> ToTensorB (enc=None, dec=None, split_idx=None, order=None)</code></pre>
+</blockquote>
+<p>Convert item to TensorImageB</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L29" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="totensora" class="level3">
+<h3 class="anchored" data-anchor-id="totensora">ToTensorA</h3>
+<blockquote class="blockquote">
+<pre><code> ToTensorA (enc=None, dec=None, split_idx=None, order=None)</code></pre>
+</blockquote>
+<p>Convert item to TensorImageA</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L41" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="change_type_of_tfm" class="level3">
+<h3 class="anchored" data-anchor-id="change_type_of_tfm">change_type_of_tfm</h3>
+<blockquote class="blockquote">
+<pre><code> change_type_of_tfm (tfm, old_type, new_type)</code></pre>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dummy_data <span class="op">=</span> np.ones((<span class="dv">128</span>,<span class="dv">128</span>,<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>normalize_tfm <span class="op">=</span> Normalize.from_stats(<span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>test_eq(normalize_tfm(TensorImage(dummy_data).cuda())[<span class="dv">0</span>],TensorImage(np.zeros((<span class="dv">128</span>,<span class="dv">128</span>,<span class="dv">3</span>))).cuda())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>new_normalize_tfm <span class="op">=</span> change_type_of_tfm(normalize_tfm, TensorImage, TensorImageA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>test_eq(new_normalize_tfm(TensorImageA(dummy_data).cuda())[<span class="dv">0</span>],TensorImageA(np.zeros((<span class="dv">128</span>,<span class="dv">128</span>,<span class="dv">3</span>))).cuda())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s add a data loading function to our library. Note that we don’t have a validation set (not necessary for CycleGAN training). Also note that we load the images with size <code>load_size</code> and take a random crop of the image with size <code>crop_size</code> (default of 256x256) to load into the model. We can also specify a subset of the data if we want (<code>num_A</code> and <code>num_B</code>). Finally, we have provided an optional argument to add your own transforms if you need.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L59" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_dls" class="level3">
+<h3 class="anchored" data-anchor-id="get_dls">get_dls</h3>
+<blockquote class="blockquote">
+<pre><code> get_dls (pathA, pathB, num_A=None, num_B=None, load_size=512,
+          crop_size=256, item_tfms=None, batch_tfms=None, bs=4,
+          num_workers=2, normalize=False)</code></pre>
+</blockquote>
+<p>Given image files from two domains (<code>pathA</code>, <code>pathB</code>), create <code>DataLoaders</code> object. Loading and randomly cropped sizes of <code>load_size</code> and <code>crop_size</code> are set to defaults of 512 and 256. Batch size is specified by <code>bs</code> (default=4).</p>
+</section>
+<section id="quick-tests" class="level3">
+<h3 class="anchored" data-anchor-id="quick-tests">Quick tests:</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>load_size<span class="op">=</span><span class="dv">512</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>crop_size<span class="op">=</span><span class="dv">256</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>bs<span class="op">=</span><span class="dv">4</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">type</span>(dls[<span class="dv">0</span>]),TfmdDL)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">len</span>(dls[<span class="dv">0</span>]),<span class="bu">int</span>(<span class="bu">len</span>(trainA_path.ls())<span class="op">/</span>bs))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">len</span>(dls[<span class="dv">1</span>]),<span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>xb,yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>test_eq(xb.shape,yb.shape)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>test_eq(xb.shape,torch.Size([bs, <span class="dv">3</span>, crop_size, crop_size]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-31-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>num_A <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>num_B <span class="op">=</span> <span class="dv">150</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span>num_A,num_B<span class="op">=</span>num_B,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">len</span>(dls[<span class="dv">0</span>]),<span class="bu">int</span>(<span class="bu">min</span>(num_A,num_B)<span class="op">/</span>bs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span>num_A,num_B<span class="op">=</span>num_B,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size, </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>              batch_tfms<span class="op">=</span>[<span class="op">*</span>aug_transforms(size<span class="op">=</span><span class="dv">224</span>), Normalize.from_stats(mean<span class="op">=</span><span class="fl">0.5</span>, std<span class="op">=</span><span class="fl">0.5</span>)], bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-35-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MakeAll(Transform):</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    order<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, value): <span class="va">self</span>.value <span class="op">=</span> value</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> encodes(<span class="va">self</span>, x:TensorImage): <span class="cf">return</span> TensorImage(torch.ones(<span class="op">*</span>x.shape))<span class="op">*</span><span class="va">self</span>.value</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> decodes(<span class="va">self</span>, x:TensorImage): <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,item_tfms<span class="op">=</span>{TensorImageA: MakeAll(<span class="fl">255.</span>)}, bs<span class="op">=</span>bs)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>test_eq(xb, TensorImage(torch.ones(<span class="op">*</span>xb.shape)).cuda())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,item_tfms<span class="op">=</span>{TensorImageB: MakeAll(<span class="fl">255.</span>)}, bs<span class="op">=</span>bs)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>test_eq(yb, TensorImage(torch.ones(<span class="op">*</span>yb.shape)).cuda())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,item_tfms<span class="op">=</span>{TensorImageA: MakeAll(<span class="fl">0.</span>), TensorImageB: MakeAll(<span class="fl">255.</span>)}, bs<span class="op">=</span>bs)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>test_eq(xb, TensorImage(<span class="op">-</span><span class="dv">1</span><span class="op">*</span>torch.ones(<span class="op">*</span>xb.shape)).cuda())</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>test_eq(yb, TensorImage(torch.ones(<span class="op">*</span>yb.shape)).cuda())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-40-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> albumentations <span class="im">import</span> RandomContrast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AlbumentationsTfm(Transform):</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    order<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, aug): <span class="va">self</span>.aug <span class="op">=</span> aug</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> encodes(<span class="va">self</span>, img: TensorImage):</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>        aug_img <span class="op">=</span> <span class="va">self</span>.aug(image<span class="op">=</span>np.array(img))[<span class="st">'image'</span>]</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">type</span>(img)(aug_img)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,item_tfms<span class="op">=</span>{TensorImageA: AlbumentationsTfm(aug<span class="op">=</span>RandomContrast((<span class="fl">0.75</span>,<span class="fl">0.99</span>),p<span class="op">=</span><span class="dv">1</span>)), <span class="op">\</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                                                                                           TensorImageB: AlbumentationsTfm(aug<span class="op">=</span>RandomContrast((<span class="op">-</span><span class="fl">0.75</span>,<span class="op">-</span><span class="fl">0.99</span>),p<span class="op">=</span><span class="dv">1</span>))}, bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/tmabraham/anaconda3/envs/UPIT/lib/python3.9/site-packages/albumentations/augmentations/transforms.py:1826: FutureWarning: This class has been deprecated. Please use RandomBrightnessContrast
+  warnings.warn(</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-44-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,batch_tfms<span class="op">=</span>{TensorImageA: MakeAll(<span class="fl">255.</span>)}, bs<span class="op">=</span>bs)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>test_eq(xb, TensorImage(torch.ones(<span class="op">*</span>xb.shape)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,batch_tfms<span class="op">=</span>{TensorImageB: MakeAll(<span class="fl">255.</span>)}, bs<span class="op">=</span>bs)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>test_eq(yb, TensorImage(torch.ones(<span class="op">*</span>yb.shape)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path, load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,batch_tfms<span class="op">=</span>{TensorImageA: MakeAll(<span class="fl">0.</span>), TensorImageB: MakeAll(<span class="fl">255.</span>)}, bs<span class="op">=</span>bs)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>test_eq(xb, TensorImage(torch.zeros(<span class="op">*</span>xb.shape)))</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>test_eq(yb, TensorImage(torch.ones(<span class="op">*</span>yb.shape)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-48-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span>num_A,num_B<span class="op">=</span>num_B,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size, normalize<span class="op">=</span><span class="va">False</span>, bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>dummy_dl <span class="op">=</span> DataLoader(Datasets([(TensorImageA(torch.ones(<span class="dv">3</span>,<span class="dv">256</span>,<span class="dv">256</span>)),TensorImageB(torch.ones(<span class="dv">3</span>,<span class="dv">256</span>,<span class="dv">256</span>))) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>)]))</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>dummy_dl.to(<span class="st">'cuda'</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>xb,yb<span class="op">=</span>dls.after_batch(<span class="bu">next</span>(<span class="bu">iter</span>(dummy_dl)))[<span class="dv">0</span>]</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>test_eq(TensorImage(xb),TensorImage(yb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span>num_A,num_B<span class="op">=</span>num_B,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size, normalize<span class="op">=</span><span class="va">True</span>, bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>dummy_dl <span class="op">=</span> DataLoader(Datasets([(TensorImageA(torch.ones(<span class="dv">3</span>,<span class="dv">256</span>,<span class="dv">256</span>)),TensorImageB(torch.ones(<span class="dv">3</span>,<span class="dv">256</span>,<span class="dv">256</span>))) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>)]))</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>dummy_dl.to(<span class="st">'cuda'</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>xb,yb<span class="op">=</span>dls.after_batch(<span class="bu">next</span>(<span class="bu">iter</span>(dummy_dl)))[<span class="dv">0</span>]</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>test_ne(TensorImage(xb),TensorImage(yb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="huggingface-datasets-loader" class="level2">
+<h2 class="anchored" data-anchor-id="huggingface-datasets-loader">HuggingFace Datasets Loader</h2>
+<p><a href="https://huggingface.co">HuggingFace</a> has a <a href="https://huggingface.co/docs/datasets">Datasets</a> package that allows us to access the hundreds of datasets available on the <a href="https://huggingface.co/datasets">Hub</a>. This includes our Horse-to-Zebra dataset (over <a href="https://huggingface.co/datasets/huggan/horse2zebra">here</a>). Here is another helper function specific for creating dataloaders for datasets available on the HuggingFace Hub:</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L111" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_dls_from_hf" class="level3">
+<h3 class="anchored" data-anchor-id="get_dls_from_hf">get_dls_from_hf</h3>
+<blockquote class="blockquote">
+<pre><code> get_dls_from_hf (dataset_name, fieldA='imageA', fieldB='imageB',
+                  num_A=None, num_B=None, load_size=512, crop_size=256,
+                  item_tfms=None, batch_tfms=None, bs=4, num_workers=2,
+                  normalize=False)</code></pre>
+</blockquote>
+<p>Given a name of a dataset available on the HuggingFace Hub, create <code>DataLoaders</code> object. Field names given in <code>fieldA</code> and <code>fieldB</code> arguments. Loading and randomly cropped sizes of <code>load_size</code> and <code>crop_size</code> are set to defaults of 512 and 256. Batch size is specified by <code>bs</code> (default=4).</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L106" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="create_image" class="level3">
+<h3 class="anchored" data-anchor-id="create_image">create_image</h3>
+<blockquote class="blockquote">
+<pre><code> create_image (x, image_type)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/data/unpaired.py#L105" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="convert_func" class="level3">
+<h3 class="anchored" data-anchor-id="convert_func">convert_func</h3>
+<blockquote class="blockquote">
+<pre><code> convert_func (x)</code></pre>
+</blockquote>
+</section>
+<section id="quick-tests-1" class="level3">
+<h3 class="anchored" data-anchor-id="quick-tests-1">Quick tests</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>load_size<span class="op">=</span><span class="dv">512</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>crop_size<span class="op">=</span><span class="dv">256</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>bs<span class="op">=</span><span class="dv">4</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls_from_hf(<span class="st">'huggan/horse2zebra'</span>,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using custom data configuration huggan--horse2zebra-aligned-424fab4179d04c8e
+Reusing dataset parquet (/home/tmabraham/.cache/huggingface/datasets/parquet/huggan--horse2zebra-aligned-424fab4179d04c8e/0.0.0/0b6d5799bb726b24ad7fc7be720c170d8e497f575d02d47537de9a5bac074901)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"ebb53799d0874a9fa66ab2820c9b28b3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">type</span>(dls[<span class="dv">0</span>]),TfmdDL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>xb,yb <span class="op">=</span> <span class="bu">next</span>(<span class="bu">iter</span>(dls[<span class="dv">0</span>]))</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>test_eq(xb.shape,yb.shape)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>test_eq(xb.shape,torch.Size([bs, <span class="dv">3</span>, crop_size, crop_size]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-59-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> dls[<span class="dv">0</span>]:</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls_from_hf(<span class="st">'huggan/horse2zebra'</span>,fieldA<span class="op">=</span><span class="st">'imageB'</span>,fieldB<span class="op">=</span><span class="st">'imageA'</span>,load_size<span class="op">=</span>load_size,crop_size<span class="op">=</span>crop_size,bs<span class="op">=</span>bs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using custom data configuration huggan--horse2zebra-aligned-424fab4179d04c8e
+Reusing dataset parquet (/home/tmabraham/.cache/huggingface/datasets/parquet/huggan--horse2zebra-aligned-424fab4179d04c8e/0.0.0/0b6d5799bb726b24ad7fc7be720c170d8e497f575d02d47537de9a5bac074901)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d1a87c4e97764739a0b6ebe4551d2a0f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="02_data.unpaired_files/figure-html/cell-62-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

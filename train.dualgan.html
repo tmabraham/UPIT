@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Defines the loss and training loop functions/classes for DualGAN.">
+
+<title>UPIT - DualGAN training loop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="UPIT - DualGAN training loop">
+<meta property="og:description" content="Defines the loss and training loop functions/classes for DualGAN.">
+<meta property="og:image" content="https://tmabraham.github.io/UPIT/08_train.dualgan_files/figure-html/cell-14-output-3.png">
+<meta property="og:site-name" content="UPIT">
+<meta property="og:image:height" content="1678">
+<meta property="og:image:width" content="2277">
+<meta name="twitter:title" content="UPIT - DualGAN training loop">
+<meta name="twitter:description" content="Defines the loss and training loop functions/classes for DualGAN.">
+<meta name="twitter:image" content="https://tmabraham.github.io/UPIT/08_train.dualgan_files/figure-html/cell-14-output-3.png">
+<meta name="twitter:image-height" content="1678">
+<meta name="twitter:image-width" content="2277">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">UPIT</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./train.cyclegan.html">Training</a></li><li class="breadcrumb-item"><a href="./train.dualgan.html">DualGAN</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.dualgan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./models.ganilla.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GANILLA</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">Data Loading</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.unpaired.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Unpaired data loading</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./train.dualgan.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">DualGAN</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metrics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Batch Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./inference.cyclegan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CycleGAN</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">Tracking</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tracking.wandb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Weights and Biases</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#dualganloss" id="toc-dualganloss" class="nav-link active" data-scroll-target="#dualganloss">DualGANLoss</a></li>
+  <li><a href="#compute_gradient_penalty" id="toc-compute_gradient_penalty" class="nav-link" data-scroll-target="#compute_gradient_penalty">compute_gradient_penalty</a></li>
+  <li><a href="#dualgantrainer" id="toc-dualgantrainer" class="nav-link" data-scroll-target="#dualgantrainer">DualGANTrainer</a></li>
+  <li><a href="#dual_learner" id="toc-dual_learner" class="nav-link" data-scroll-target="#dual_learner">dual_learner</a></li>
+  <li><a href="#quick-test" id="toc-quick-test" class="nav-link" data-scroll-target="#quick-test">Quick Test</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/tmabraham/UPIT/tree/master/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">DualGAN training loop</h1>
+</div>
+
+<div>
+  <div class="description">
+    Defines the loss and training loop functions/classes for DualGAN.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>set_seed(<span class="dv">999</span>, reproducible<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/dualgan.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="dualganloss" class="level3">
+<h3 class="anchored" data-anchor-id="dualganloss">DualGANLoss</h3>
+<blockquote class="blockquote">
+<pre><code> DualGANLoss (dualgan:torch.nn.modules.module.Module, l_adv:float=1.0,
+              l_rec:float=1.0, l_idt:float=0.0)</code></pre>
+</blockquote>
+<p>DualGAN loss function. The individual loss terms are also atrributes of this class that are accessed by fastai for recording during training.</p>
+<p>Attributes:</p>
+<p><code>self.dualgan</code> (<code>nn.Module</code>): The DualGAN model.</p>
+<p><code>self.l_A</code> (<code>float</code>): lambda_A, weight of domain A losses.</p>
+<p><code>self.l_B</code> (<code>float</code>): lambda_B, weight of domain B losses.</p>
+<p><code>self.crit</code> (<code>AdaptiveLoss</code>): The adversarial loss function (either a BCE or MSE loss depending on <code>lsgan</code> argument)</p>
+<p><code>self.real_A</code> and <code>self.real_B</code> (<a href="https://docs.fast.ai/torch_core.html#tensorimage"><code>fastai.torch_core.TensorImage</code></a>): Real images from domain A and B.</p>
+<p><code>self.gen_loss</code> (<code>torch.FloatTensor</code>): The generator loss calculated in the forward function</p>
+<p><code>self.cyc_loss</code> (<code>torch.FloatTensor</code>): The cyclic loss calculated in the forward function</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/dualgan.py#L68" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="compute_gradient_penalty" class="level3">
+<h3 class="anchored" data-anchor-id="compute_gradient_penalty">compute_gradient_penalty</h3>
+<blockquote class="blockquote">
+<pre><code> compute_gradient_penalty (D, real_samples, fake_samples)</code></pre>
+</blockquote>
+<p>Calculates the gradient penalty loss for WGAN GP</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/dualgan.py#L90" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="dualgantrainer" class="level3">
+<h3 class="anchored" data-anchor-id="dualgantrainer">DualGANTrainer</h3>
+<blockquote class="blockquote">
+<pre><code> DualGANTrainer (n_crit=2, clip_value=0.1, l_gp=None)</code></pre>
+</blockquote>
+<p><code>Learner</code> Callback for training a DualGAN model.</p>
+<hr>
+<p><a href="https://github.com/tmabraham/UPIT/tree/master/blob/master/upit/train/dualgan.py#L176" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="dual_learner" class="level3">
+<h3 class="anchored" data-anchor-id="dual_learner">dual_learner</h3>
+<blockquote class="blockquote">
+<pre><code> dual_learner (dls:fastai.data.load.DataLoader,
+               m:upit.models.dualgan.DualGAN, opt_func=&lt;function RMSProp&gt;,
+               loss_func=&lt;class '__main__.DualGANLoss'&gt;,
+               show_imgs:bool=True, imgA:bool=True, imgB:bool=True,
+               show_img_interval:bool=10, metrics:list=[], cbs:list=[],
+               lr:Union[float,slice]=0.001, splitter:&lt;built-
+               infunctioncallable&gt;=&lt;function trainable_params&gt;,
+               path:Union[str,pathlib.Path,NoneType]=None,
+               model_dir:Union[str,pathlib.Path]='models',
+               wd:Union[float,int,NoneType]=None, wd_bn_bias:bool=False,
+               train_bn:bool=True, moms:tuple=(0.95, 0.85, 0.95),
+               default_cbs:bool=True)</code></pre>
+</blockquote>
+<p>Initialize and return a <code>Learner</code> object with the data in <code>dls</code>, DualGAN model <code>m</code>, optimizer function <code>opt_func</code>, metrics <code>metrics</code>, and callbacks <code>cbs</code>. Additionally, if <code>show_imgs</code> is True, it will show intermediate predictions during training. It will show domain B-to-A predictions if <code>imgA</code> is True and/or domain A-to-B predictions if <code>imgB</code> is True. Additionally, it will show images every <code>show_img_interval</code> epochs. <code>Other</code>Learner` arguments can be passed as well.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dls</td>
+<td>DataLoaders</td>
+<td></td>
+<td><code>DataLoaders</code> containing fastai or PyTorch <code>DataLoader</code>s</td>
+</tr>
+<tr class="even">
+<td>m</td>
+<td>DualGAN</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>opt_func</td>
+<td>Optimizer | OptimWrapper</td>
+<td>Adam</td>
+<td>Optimization function for training</td>
+</tr>
+<tr class="even">
+<td>loss_func</td>
+<td>callable | None</td>
+<td>None</td>
+<td>Loss function. Defaults to <code>dls</code> loss</td>
+</tr>
+<tr class="odd">
+<td>show_imgs</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>imgA</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>imgB</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>show_img_interval</td>
+<td>bool</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>metrics</td>
+<td>callable | MutableSequence | None</td>
+<td>None</td>
+<td><code>Metric</code>s to calculate on validation set</td>
+</tr>
+<tr class="even">
+<td>cbs</td>
+<td>Callback | MutableSequence | None</td>
+<td>None</td>
+<td><code>Callback</code>s to add to <code>Learner</code></td>
+</tr>
+<tr class="odd">
+<td>lr</td>
+<td>float | slice</td>
+<td>0.001</td>
+<td>Default learning rate</td>
+</tr>
+<tr class="even">
+<td>splitter</td>
+<td>callable</td>
+<td>trainable_params</td>
+<td>Split model into parameter groups. Defaults to one parameter group</td>
+</tr>
+<tr class="odd">
+<td>path</td>
+<td>str | Path | None</td>
+<td>None</td>
+<td>Parent directory to save, load, and export models. Defaults to <code>dls</code> <code>path</code></td>
+</tr>
+<tr class="even">
+<td>model_dir</td>
+<td>str | Path</td>
+<td>models</td>
+<td>Subdirectory to save and load models</td>
+</tr>
+<tr class="odd">
+<td>wd</td>
+<td>float | int | None</td>
+<td>None</td>
+<td>Default weight decay</td>
+</tr>
+<tr class="even">
+<td>wd_bn_bias</td>
+<td>bool</td>
+<td>False</td>
+<td>Apply weight decay to normalization and bias parameters</td>
+</tr>
+<tr class="odd">
+<td>train_bn</td>
+<td>bool</td>
+<td>True</td>
+<td>Train frozen normalization layers</td>
+</tr>
+<tr class="even">
+<td>moms</td>
+<td>tuple</td>
+<td>(0.95, 0.85, 0.95)</td>
+<td>Default momentum for schedulers</td>
+</tr>
+<tr class="odd">
+<td>default_cbs</td>
+<td>bool</td>
+<td>True</td>
+<td>Include default <code>Callback</code>s</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="quick-test" class="level2">
+<h2 class="anchored" data-anchor-id="quick-test">Quick Test</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>horse2zebra <span class="op">=</span> untar_data(<span class="st">'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/horse2zebra.zip'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>folders <span class="op">=</span> horse2zebra.ls().<span class="bu">sorted</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>trainA_path <span class="op">=</span> folders[<span class="dv">2</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>trainB_path <span class="op">=</span> folders[<span class="dv">3</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>testA_path <span class="op">=</span> folders[<span class="dv">0</span>]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>testB_path <span class="op">=</span> folders[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_dls(trainA_path, trainB_path,num_A<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dual_gan <span class="op">=</span> DualGAN()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> dual_learner(dls, dual_gan,show_img_interval<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>learn.show_training_loop()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Start Fit
+   - before_fit     : [TrainEvalCallback, ShowImgsCallback, Recorder, ProgressCallback]
+  Start Epoch Loop
+     - before_epoch   : [Recorder, ProgressCallback]
+    Start Train
+       - before_train   : [TrainEvalCallback, DualGANTrainer, Recorder, ProgressCallback]
+      Start Batch Loop
+         - before_batch   : [DualGANTrainer]
+         - after_pred     : [DualGANTrainer]
+         - after_loss     : []
+         - before_backward: []
+         - before_step    : []
+         - after_step     : []
+         - after_cancel_batch: []
+         - after_batch    : [TrainEvalCallback, Recorder, ProgressCallback]
+      End Batch Loop
+    End Train
+     - after_cancel_train: [Recorder]
+     - after_train    : [Recorder, ProgressCallback]
+    Start Valid
+       - before_validate: [TrainEvalCallback, Recorder, ProgressCallback]
+      Start Batch Loop
+         - **CBs same as train batch**: []
+      End Batch Loop
+    End Valid
+     - after_cancel_validate: [Recorder]
+     - after_validate : [Recorder, ProgressCallback]
+  End Epoch Loop
+   - after_cancel_epoch: []
+   - after_epoch    : [ShowImgsCallback, Recorder]
+End Fit
+ - after_cancel_fit: []
+ - after_fit      : [ProgressCallback]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">type</span>(learn),Learner)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>learn.fit_flat_lin(<span class="dv">5</span>,<span class="dv">5</span>,<span class="fl">2e-4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">adv_loss_A</th>
+<th data-quarto-table-cell-role="th">adv_loss_B</th>
+<th data-quarto-table-cell-role="th">rec_loss_A</th>
+<th data-quarto-table-cell-role="th">rec_loss_B</th>
+<th data-quarto-table-cell-role="th">D_A_loss</th>
+<th data-quarto-table-cell-role="th">D_B_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>-1.225994</td>
+<td>-0.965739</td>
+<td>-0.931990</td>
+<td>0.354460</td>
+<td>0.353114</td>
+<td>-0.010898</td>
+<td>-0.002097</td>
+<td>00:06</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>-1.383732</td>
+<td>-0.999190</td>
+<td>-0.998738</td>
+<td>0.258967</td>
+<td>0.261373</td>
+<td>-0.000011</td>
+<td>-0.000268</td>
+<td>00:06</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>-1.448422</td>
+<td>-0.999503</td>
+<td>-0.999257</td>
+<td>0.244793</td>
+<td>0.240065</td>
+<td>0.000066</td>
+<td>-0.000068</td>
+<td>00:06</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>-1.488793</td>
+<td>-0.999653</td>
+<td>-0.999547</td>
+<td>0.240394</td>
+<td>0.223500</td>
+<td>0.000069</td>
+<td>-0.000088</td>
+<td>00:07</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>-1.529549</td>
+<td>-0.999728</td>
+<td>-0.999568</td>
+<td>0.212509</td>
+<td>0.204648</td>
+<td>-0.000021</td>
+<td>-0.000083</td>
+<td>00:07</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>-1.574171</td>
+<td>-0.999754</td>
+<td>-0.999664</td>
+<td>0.190567</td>
+<td>0.178492</td>
+<td>0.000010</td>
+<td>-0.000069</td>
+<td>00:08</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>-1.633542</td>
+<td>-0.999816</td>
+<td>-0.999724</td>
+<td>0.143122</td>
+<td>0.139768</td>
+<td>0.000010</td>
+<td>-0.000058</td>
+<td>00:08</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>-1.675023</td>
+<td>-0.999844</td>
+<td>-0.999737</td>
+<td>0.129500</td>
+<td>0.133948</td>
+<td>0.000027</td>
+<td>-0.000105</td>
+<td>00:08</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>-1.706186</td>
+<td>-0.999842</td>
+<td>-0.999745</td>
+<td>0.118132</td>
+<td>0.129545</td>
+<td>0.000022</td>
+<td>-0.000052</td>
+<td>00:09</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>-1.726011</td>
+<td>-0.999837</td>
+<td>-0.999760</td>
+<td>0.118993</td>
+<td>0.126145</td>
+<td>-0.000012</td>
+<td>-0.000052</td>
+<td>00:09</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/tmabraham/anaconda3/lib/python3.7/site-packages/fastprogress/fastprogress.py:74: UserWarning: Your generator is empty.
+  warn("Your generator is empty.")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="08_train.dualgan_files/figure-html/cell-14-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>learn.recorder.plot_loss(with_valid<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="08_train.dualgan_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
