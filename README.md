@@ -15,6 +15,9 @@ accelerate deep learning experimentation. Additionally,
 [nbdev](https://github.com/fastai/nbdev) was used to develop the package
 and produce documentation based on a series of notebooks.
 
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7889404.svg)](https://doi.org/10.5281/zenodo.7889404)
+
 ## Install
 
 To install, use `pip`:
