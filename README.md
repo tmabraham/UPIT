@@ -87,11 +87,12 @@ information!
 ## Citing UPIT
 
 If you use UPIT in your research please use the following BibTeX entry:
-
-    @Misc{UPIT,
-        author =       {Tanishq Mathew Abraham},
-        title =        {UPIT - A fastai/PyTorch package for unpaired image-to-image translation.},
-        howpublished = {Github},
-        year =         {2021},
-        url =          {https://github.com/tmabraham/UPIT}
-    }
+```
+@software{Abraham_UPIT_-_A,
+    author = {Abraham, Tanishq Mathew},
+    doi = {10.5281/zenodo.7889405},
+    title = {{UPIT - A fastai/PyTorch package for unpaired image-to-image translation.}},
+    url = {https://github.com/tmabraham/UPIT},
+    version = {0.2.3}
+}
+```
