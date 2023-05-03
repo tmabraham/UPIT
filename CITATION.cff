@@ -7,6 +7,7 @@ authors:
   given-names: "Tanishq Mathew"
   orcid: "https://orcid.org/0000-0002-9590-391X"
 title: "UPIT - A fastai/PyTorch package for unpaired image-to-image translation."
-repository-code: "https://github.com/tmabraham/UPIT"
+url: "https://github.com/tmabraham/UPIT"
+doi: 10.5281/zenodo.7889405
 date-released: 2021
 version: 0.2.3
