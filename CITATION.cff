@@ -1,11 +1,12 @@
 # YAML 1.2
 ---
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Abraham"
   given-names: "Tanishq Mathew"
+  orcid: "https://orcid.org/0000-0002-9590-391X"
 title: "UPIT - A fastai/PyTorch package for unpaired image-to-image translation."
 repository-code: "https://github.com/tmabraham/UPIT"
 date-released: 2021
-version: 0.1.0
+version: 0.2.3
